@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Set up your ResumeChecker profile — pick your industry, upload your resume.">
+    <title>ResumeChecker — Get Started</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="navbar-brand">
+                <span class="logo-icon">✦</span>
+                ResumeChecker
+            </a>
+            <ul class="navbar-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="report.html">Reports</a></li>
+                <li><a href="#">Tools</a></li>
+            </ul>
+            <div class="navbar-actions"></div>
+        </div>
+    </nav>
+
+    <!-- Onboarding -->
+    <section class="onboarding-page">
+        <div class="container">
+            <div class="onboarding-container fade-in">
+
+                <!-- Step indicators -->
+                <div class="onboarding-progress">
+                    <div class="onboarding-step-indicator active" data-step="1">1</div>
+                    <div class="onboarding-line" id="line1"></div>
+                    <div class="onboarding-step-indicator" data-step="2">2</div>
+                    <div class="onboarding-line" id="line2"></div>
+                    <div class="onboarding-step-indicator" data-step="3">3</div>
+                </div>
+
+                <!-- Step 1: Industry -->
+                <div class="onboarding-card" id="step1">
+                    <h2>What's your industry?</h2>
+                    <p>We'll tailor the analysis to your field</p>
+                    <div class="industry-grid">
+                        <div class="industry-card" data-industry="software">
+                            <div class="industry-icon">💻</div>
+                            <div>
+                                <div class="industry-name">Software Engineering</div>
+                                <div class="text-muted" style="font-size:0.8rem">Tech & Development</div>
+                            </div>
+                        </div>
+                        <div class="industry-card" data-industry="medicine">
+                            <div class="industry-icon">🏥</div>
+                            <div>
+                                <div class="industry-name">Medicine & Health</div>
+                                <div class="text-muted" style="font-size:0.8rem">Healthcare Industry</div>
+                            </div>
+                        </div>
+                        <div class="industry-card" data-industry="engineering">
+                            <div class="industry-icon">⚙️</div>
+                            <div>
+                                <div class="industry-name">Engineering</div>
+                                <div class="text-muted" style="font-size:0.8rem">Mechanical, Civil, Electrical</div>
+                            </div>
+                        </div>
+                        <div class="industry-card" data-industry="design">
+                            <div class="industry-icon">🎨</div>
+                            <div>
+                                <div class="industry-name">Graphic Design</div>
+                                <div class="text-muted" style="font-size:0.8rem">Creative & Visual Arts</div>
+                            </div>
+                        </div>
+                        <div class="industry-card" data-industry="finance">
+                            <div class="industry-icon">📊</div>
+                            <div>
+                                <div class="industry-name">Finance & Business</div>
+                                <div class="text-muted" style="font-size:0.8rem">Banking, Consulting</div>
+                            </div>
+                        </div>
+                        <div class="industry-card" data-industry="other">
+                            <div class="industry-icon">🌐</div>
+                            <div>
+                                <div class="industry-name">Other</div>
+                                <div class="text-muted" style="font-size:0.8rem">Tell us your field</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="onboarding-nav">
+                        <span></span>
+                        <button class="btn btn-primary" id="step1Next" disabled>Next →</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Upload -->
+                <div class="onboarding-card hidden" id="step2">
+                    <h2>Upload your resume</h2>
+                    <p>We accept PDF, DOCX, or TXT files</p>
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-icon">📄</div>
+                        <p><strong>Drag & drop</strong> your resume here</p>
+                        <p class="upload-hint">or click to browse • Max 10MB</p>
+                        <input type="file" id="fileInput" accept=".pdf,.docx,.doc,.txt" style="display:none">
+                    </div>
+                    <div class="file-selected hidden" id="fileInfo">
+                        <span class="file-icon">📎</span>
+                        <div>
+                            <div class="file-name" id="fileName">resume.pdf</div>
+                            <div class="file-size" id="fileSize">245 KB</div>
+                        </div>
+                    </div>
+                    <div class="onboarding-nav">
+                        <button class="btn btn-secondary" id="step2Back">← Back</button>
+                        <button class="btn btn-primary" id="step2Next" disabled>Analyze Resume →</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Analysis -->
+                <div class="onboarding-card hidden" id="step3">
+                    <h2>Analyzing your resume…</h2>
+                    <p>Sit tight — our AI is reviewing your document</p>
+                    <div class="analysis-progress">
+                        <div class="progress-ring-large" id="analysisRing">
+                            <svg viewBox="0 0 180 180" width="180" height="180">
+                                <defs>
+                                    <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#7c5cfc" />
+                                        <stop offset="100%" stop-color="#5c9cfc" />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="ring-bg" cx="90" cy="90" r="72" />
+                                <circle class="ring-progress" cx="90" cy="90" r="72" id="analysisProgress" />
+                            </svg>
+                            <div class="progress-text">
+                                <div class="progress-percent text-gradient" id="analysisPercent">0%</div>
+                                <div class="progress-label">Processing</div>
+                            </div>
+                        </div>
+                        <div class="progress-steps">
+                            <div class="progress-step-item active" id="pStep1">
+                                <span class="progress-step-check">●</span>
+                                Parsing document structure
+                            </div>
+                            <div class="progress-step-item" id="pStep2">
+                                <span class="progress-step-check">●</span>
+                                Extracting keywords & skills
+                            </div>
+                            <div class="progress-step-item" id="pStep3">
+                                <span class="progress-step-check">●</span>
+                                Analyzing against ATS patterns
+                            </div>
+                            <div class="progress-step-item" id="pStep4">
+                                <span class="progress-step-check">●</span>
+                                Generating your report
+                            </div>
+                        </div>
+                    </div>
+                    <div class="onboarding-nav">
+                        <span></span>
+                        <a href="dashboard.html" class="btn btn-primary hidden" id="step3Finish">View Dashboard →</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

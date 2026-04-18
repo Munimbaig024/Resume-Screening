@@ -1,0 +1,13 @@
+flask
+flask-cors
+flask-jwt-extended
+flask-limiter
+pymongo[srv]
+python-dotenv
+pdfplumber
+python-docx
+sentence-transformers
+faiss-cpu
+groq
+bcrypt
+cryptography

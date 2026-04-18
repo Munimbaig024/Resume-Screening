@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your detailed resume analysis report from ResumeChecker.">
+    <title>ResumeChecker — Resume Report</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="navbar-brand">
+                <span class="logo-icon">✦</span>
+                ResumeChecker
+            </a>
+            <ul class="navbar-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="report.html" class="active">Reports</a></li>
+                <li><a href="#">Tools</a></li>
+            </ul>
+            <div class="navbar-actions">
+                <a href="dashboard.html" class="btn btn-secondary btn-sm">← Back to Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="report-page">
+        <div class="dashboard-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Main</div>
+                    <a href="index.html" class="sidebar-link"><span class="link-icon">🏠</span> Home</a>
+                    <a href="dashboard.html" class="sidebar-link"><span class="link-icon">📊</span> Dashboard</a>
+                    <a href="report.html" class="sidebar-link active"><span class="link-icon">📝</span> Reports</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Workspace</div>
+                    <a href="#" class="sidebar-link"><span class="link-icon">📁</span> Projects</a>
+                    <a href="#" class="sidebar-link"><span class="link-icon">✅</span> Tasks</a>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="dashboard-main">
+                <div class="dashboard-header fade-in">
+                    <div class="dashboard-greeting">
+                        <h1>Resume Report</h1>
+                        <p>Detailed analysis of your latest resume • Updated today</p>
+                    </div>
+                </div>
+
+                <!-- Overall Gauge -->
+                <div class="report-gauge-section fade-in delay-1">
+                    <div class="gauge-container" id="reportGauge">
+                        <svg viewBox="0 0 220 220" width="220" height="220">
+                            <defs>
+                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#7c5cfc" />
+                                    <stop offset="100%" stop-color="#5c9cfc" />
+                                </linearGradient>
+                            </defs>
+                            <circle class="gauge-bg" cx="110" cy="110" r="90" />
+                            <circle class="gauge-fill" cx="110" cy="110" r="90" id="gaugeFill" />
+                        </svg>
+                        <div class="gauge-text">
+                            <div class="gauge-number text-gradient" id="gaugeNumber">0%</div>
+                            <div class="gauge-label">Overall Score</div>
+                        </div>
+                    </div>
+                    <p>Your resume scores above average but there's room for improvement. Focus on the suggestions below
+                        to boost your score.</p>
+                </div>
+
+                <!-- Metric Cards -->
+                <div class="metrics-grid fade-in delay-2">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-icon" style="background:rgba(124,92,252,0.1);color:#7c5cfc">🔑</div>
+                            <span class="badge badge-primary">Good</span>
+                        </div>
+                        <div class="metric-score">75%</div>
+                        <div class="metric-name">Keyword Analysis</div>
+                        <div class="metric-bar">
+                            <div class="metric-bar-fill" data-width="75"></div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-icon" style="background:rgba(52,211,153,0.1);color:#34d399">💬</div>
+                            <span class="badge badge-success">Good</span>
+                        </div>
+                        <div class="metric-score">74%</div>
+                        <div class="metric-name">Soft Skills</div>
+                        <div class="metric-bar">
+                            <div class="metric-bar-fill" data-width="74"></div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-icon" style="background:rgba(251,191,36,0.1);color:#fbbf24">🏆</div>
+                            <span class="badge badge-warning">Fair</span>
+                        </div>
+                        <div class="metric-score">69%</div>
+                        <div class="metric-name">Achievement Impact</div>
+                        <div class="metric-bar">
+                            <div class="metric-bar-fill" data-width="69"></div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-icon" style="background:rgba(248,113,113,0.1);color:#f87171">📈</div>
+                            <span class="badge badge-warning">Fair</span>
+                        </div>
+                        <div class="metric-score">67%</div>
+                        <div class="metric-name">ATS Trends</div>
+                        <div class="metric-bar">
+                            <div class="metric-bar-fill" data-width="67"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explanations -->
+                <div class="explanations-section fade-in delay-3">
+                    <h2>Score Breakdown</h2>
+                    <div class="explanation-item">
+                        <div class="exp-icon">🔑</div>
+                        <div>
+                            <h4>Keyword Analysis — 75%</h4>
+                            <p>Your resume contains most industry-relevant keywords, but you're missing some critical
+                                terms like "CI/CD", "microservices", and "agile methodology" that appear frequently in
+                                job listings in your field.</p>
+                        </div>
+                    </div>
+                    <div class="explanation-item">
+                        <div class="exp-icon">💬</div>
+                        <div>
+                            <h4>Soft Skills — 74%</h4>
+                            <p>You demonstrate communication and teamwork skills through your experience descriptions.
+                                Consider adding more examples of leadership, mentoring, or cross-functional
+                                collaboration.</p>
+                        </div>
+                    </div>
+                    <div class="explanation-item">
+                        <div class="exp-icon">🏆</div>
+                        <div>
+                            <h4>Achievement Impact — 69%</h4>
+                            <p>Some achievements lack quantifiable results. Instead of "Improved performance", try
+                                "Improved API response time by 40%, reducing p95 latency from 800ms to 480ms". Numbers
+                                make impact tangible.</p>
+                        </div>
+                    </div>
+                    <div class="explanation-item">
+                        <div class="exp-icon">📈</div>
+                        <div>
+                            <h4>ATS Trends — 67%</h4>
+                            <p>Your resume format is mostly ATS-friendly but uses some custom section headers that may
+                                not be recognized. Stick to standard sections: "Experience", "Education", "Skills",
+                                "Projects".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggestions -->
+                <div class="suggestions-section fade-in delay-4">
+                    <h2>Improvement Suggestions</h2>
+                    <div class="suggestion-item">
+                        <span class="suggestion-check">○</span>
+                        <span class="suggestion-text">Add missing keywords: <strong>CI/CD, microservices, agile, Docker,
+                                Kubernetes</strong></span>
+                        <span class="badge badge-danger suggestion-priority">High</span>
+                    </div>
+                    <div class="suggestion-item">
+                        <span class="suggestion-check">○</span>
+                        <span class="suggestion-text">Quantify achievements — use numbers, percentages, and
+                            metrics</span>
+                        <span class="badge badge-danger suggestion-priority">High</span>
+                    </div>
+                    <div class="suggestion-item">
+                        <span class="suggestion-check">○</span>
+                        <span class="suggestion-text">Rename custom sections to standard ATS-recognized headers</span>
+                        <span class="badge badge-warning suggestion-priority">Medium</span>
+                    </div>
+                    <div class="suggestion-item">
+                        <span class="suggestion-check">○</span>
+                        <span class="suggestion-text">Add a professional summary at the top of your resume</span>
+                        <span class="badge badge-warning suggestion-priority">Medium</span>
+                    </div>
+                    <div class="suggestion-item">
+                        <span class="suggestion-check">○</span>
+                        <span class="suggestion-text">Include examples of leadership and mentoring experience</span>
+                        <span class="badge badge-primary suggestion-priority">Low</span>
+                    </div>
+                    <div class="suggestion-item">
+                        <span class="suggestion-check">○</span>
+                        <span class="suggestion-text">Add relevant certifications (AWS, Google Cloud, etc.)</span>
+                        <span class="badge badge-primary suggestion-priority">Low</span>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

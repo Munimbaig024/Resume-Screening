@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ResumeChecker — AI-powered resume analysis to maximize your job search success.">
+  <title>ResumeChecker — Land Your Dream Job</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <span class="logo-icon">✦</span>
+        ResumeChecker
+      </a>
+      <ul class="navbar-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="report.html">Reports</a></li>
+        <li><a href="#">Tools</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="auth.html" class="btn btn-secondary btn-sm">Log In</a>
+        <a href="auth.html#signup" class="btn btn-primary btn-sm">Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="landing-hero">
+    <div class="container">
+      <div class="hero-content">
+        <!-- Left: Text -->
+        <div class="hero-text fade-in">
+          <h1>Make Your Resume <span class="text-gradient">Stand Out</span></h1>
+          <p>Our AI analyzes your resume against industry standards and ATS systems, giving you actionable insights to land more interviews.</p>
+          <div class="hero-ctas">
+            <a href="auth.html#signup" class="btn btn-primary btn-lg">Get Started Free</a>
+            <a href="#features" class="btn btn-secondary btn-lg">See How It Works</a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <div class="stat-number">50K+</div>
+              <div class="stat-label">Users</div>
+            </div>
+            <div class="hero-stat">
+              <div class="stat-number">120K+</div>
+              <div class="stat-label">Resumes Checked</div>
+            </div>
+            <div class="hero-stat">
+              <div class="stat-number">87%</div>
+              <div class="stat-label">Avg. Improvement</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Score Ring + Chips -->
+        <div class="score-ring-container fade-in delay-2">
+          <div class="score-ring-wrapper">
+            <div class="score-ring" id="heroScoreRing">
+              <svg viewBox="0 0 250 250" width="250" height="250">
+                <defs>
+                  <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#7c5cfc"/>
+                    <stop offset="100%" stop-color="#5c9cfc"/>
+                  </linearGradient>
+                </defs>
+                <circle class="ring-bg" cx="125" cy="125" r="110"/>
+                <circle class="ring-progress" cx="125" cy="125" r="110" id="heroRingProgress"/>
+              </svg>
+              <div class="score-text">
+                <div class="score-number text-gradient" id="heroScoreNum">0%</div>
+                <div class="score-label">Resume Score</div>
+              </div>
+            </div>
+            <div class="review-chips">
+              <div class="review-chip">
+                <span class="chip-avatar">JD</span>
+                "Went from 60% to 94%!"
+              </div>
+              <div class="review-chip">
+                <span class="chip-avatar">SL</span>
+                "Landed 3 interviews in a week"
+              </div>
+              <div class="review-chip">
+                <span class="chip-avatar">MR</span>
+                "Best resume tool out there"
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

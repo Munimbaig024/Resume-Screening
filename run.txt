@@ -1,0 +1,8 @@
+# 1. Setup DB (once)
+cd f:\Rafay\resume_checker\backend
+venv\Scripts\activate
+pip install -r requirements.txt
+python setup_db.py   ← creates all collections, indexes, admin user
+
+# 2. Run app
+python app.py        ← http://localhost:5000

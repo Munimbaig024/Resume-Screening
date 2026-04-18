@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your ResumeChecker profile and dashboard.">
+    <title>ResumeChecker — Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="navbar-brand">
+                <span class="logo-icon">✦</span>
+                ResumeChecker
+            </a>
+            <ul class="navbar-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="report.html">Reports</a></li>
+                <li><a href="#">Tools</a></li>
+            </ul>
+            <div class="navbar-actions">
+                <button class="btn btn-icon btn-secondary" id="sidebarToggle" title="Toggle Sidebar">☰</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Main</div>
+                <a href="index.html" class="sidebar-link"><span class="link-icon">🏠</span> Home</a>
+                <a href="dashboard.html" class="sidebar-link active"><span class="link-icon">📊</span> Dashboard</a>
+                <a href="report.html" class="sidebar-link"><span class="link-icon">📝</span> Reports <span
+                        class="link-badge">3</span></a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Workspace</div>
+                <a href="#" class="sidebar-link"><span class="link-icon">📁</span> Projects</a>
+                <a href="#" class="sidebar-link"><span class="link-icon">✅</span> Tasks</a>
+                <a href="#" class="sidebar-link"><span class="link-icon">🕐</span> Recently Added</a>
+                <a href="#" class="sidebar-link"><span class="link-icon">⭐</span> Recommended</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Help</div>
+                <a href="#" class="sidebar-link"><span class="link-icon">🛟</span> Support</a>
+                <a href="#" class="sidebar-link"><span class="link-icon">⚙️</span> Settings</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Header -->
+            <div class="dashboard-header fade-in">
+                <div class="dashboard-greeting">
+                    <h1>Good afternoon, Rafay 👋</h1>
+                    <p>Here's an overview of your resume progress</p>
+                </div>
+                <a href="report.html" class="btn btn-primary btn-sm">View Latest Report →</a>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="profile-card fade-in delay-1">
+                <div class="profile-avatar">R</div>
+                <div class="profile-info">
+                    <h3>Rafay Ahmed</h3>
+                    <p class="profile-title">Software Engineer • 3 years experience</p>
+                    <div class="profile-tags">
+                        <span class="badge badge-primary">Python</span>
+                        <span class="badge badge-primary">JavaScript</span>
+                        <span class="badge badge-primary">React</span>
+                        <span class="badge badge-success">ATS Score: 76%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Experience Timeline -->
+            <div class="timeline-section fade-in delay-2">
+                <h3>Experience</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h4>Software Engineer</h4>
+                        <div class="timeline-company">TechCorp Inc.</div>
+                        <div class="timeline-dates">Jan 2024 — Present</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h4>Junior Developer</h4>
+                        <div class="timeline-company">StartupXYZ</div>
+                        <div class="timeline-dates">Jun 2022 — Dec 2023</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h4>Intern — Web Development</h4>
+                        <div class="timeline-company">Digital Solutions</div>
+                        <div class="timeline-dates">Jan 2022 — May 2022</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Cards -->
+            <div class="action-cards fade-in delay-3">
+                <a href="onboarding.html" class="action-card">
+                    <div class="action-icon">📄</div>
+                    <h3>Upload Resume</h3>
+                    <p>Upload a new version for fresh analysis</p>
+                </a>
+                <div class="action-card" id="openChatBtn">
+                    <div class="action-icon">🤖</div>
+                    <h3>Seek Advice from AI</h3>
+                    <p>Get personalized tips from our AI chatbot</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Floating AI Button -->
+    <button class="ai-fab" id="aiFab" title="AI Assistant">🤖</button>
+
+    <!-- AI Chat Popup -->
+    <div class="ai-chat-popup" id="aiChatPopup">
+        <div class="chat-header">
+            <h4><span class="status-dot"></span> AI Resume Advisor</h4>
+            <button class="btn btn-icon btn-secondary" id="closeChatBtn"
+                style="width:32px;height:32px;font-size:0.9rem">✕</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-msg bot">Hi! 👋 I'm your AI resume advisor. Ask me anything about improving your resume,
+                tailoring it for specific jobs, or general career tips.</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Ask something…" autocomplete="off">
+            <button id="chatSendBtn">➤</button>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
