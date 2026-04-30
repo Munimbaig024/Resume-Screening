@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports — ResumeAI</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%233b82f6'/><text x='16' y='22' text-anchor='middle' font-family='Arial,sans-serif' font-size='18' font-weight='bold' fill='white'>R</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .history-report-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 0.85rem;
+      transition: var(--transition);
+    }
+    .history-report-card:hover {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1px var(--blue);
+      transform: translateY(-1px);
+    }
+    .hrc-left { flex: 1; min-width: 0; }
+    .hrc-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hrc-meta { font-size: 0.8rem; color: var(--muted); }
+    .hrc-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+    .hrc-score { font-family: 'Sora', sans-serif; }
+    .score-card-value.green { color: var(--success); }
+    .score-card-value.amber { color: var(--warning); }
+    .score-card-value.red   { color: var(--danger); }
+    .score-card-value.muted { color: var(--muted); }
+
+    /* ── Score Trend section ── */
+    #trendSection { margin-bottom: 2rem; }
+    .trend-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .trend-stat-card {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .trend-stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    .trend-stat-value {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.2rem;
+    }
+    .trend-stat-sub { font-size: 0.75rem; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .trend-chart-card {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem 1rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .trend-chart-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--sub);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.85rem;
+    }
+    .trend-single-msg {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+    /* Sparkline canvas on cards */
+    .hrc-sparkline { display: flex; align-items: center; }
+    @media (max-width: 640px) {
+      .trend-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <script>
+    (function() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        
+        ResumeAI
+      </a>
+      <ul class="navbar-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="history.html" class="active">Reports</a></li>
+        <li><a href="how_it_works.html">How It Works</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <button class="btn btn-icon btn-secondary" id="themeToggle" title="Toggle Theme" style="margin-right: 4px;">
+          <i data-lucide="moon"></i>
+        </button>
+        <a href="onboarding.html" class="btn btn-primary btn-sm">+ New Analysis</a>
+        <button class="btn btn-secondary btn-sm" id="logoutBtn">Sign Out</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Main</div>
+        <a href="dashboard.html" class="sidebar-link"><i data-lucide="layout-dashboard" class="link-icon"></i> Dashboard</a>
+        <a href="history.html" class="sidebar-link active"><i data-lucide="file-text" class="link-icon"></i> Reports</a>
+        <a href="how_it_works.html" class="sidebar-link"><i data-lucide="help-circle" class="link-icon"></i> How It Works</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Account</div>
+        <a href="#" class="sidebar-link" id="sidebarLogout"><i data-lucide="log-out" class="link-icon"></i> Sign Out</a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="dashboard-main">
+      <div class="dashboard-header fade-in">
+        <div class="dashboard-greeting">
+          <h1>Your Reports</h1>
+          <p>All past resume screenings — click any card to view the full report</p>
+        </div>
+        <a href="onboarding.html" class="btn btn-primary btn-sm">+ New Analysis</a>
+      </div>
+
+      <!-- Score Trend section — shown/hidden by JS -->
+      <div id="trendSection" style="display:none" class="fade-in delay-1">
+        <div class="trend-stats" id="trendStats">
+          <!-- 3 stat cards injected by JS -->
+        </div>
+        <div class="trend-chart-card">
+          <div class="trend-chart-title">Score Trend Over Time</div>
+          <div style="position:relative;max-height:280px">
+            <canvas id="trendChart"></canvas>
+          </div>
+          <p class="trend-single-msg" id="trendSingleMsg" style="display:none">
+            Screen more resumes to see your progress over time.
+          </p>
+        </div>
+      </div>
+
+      <div class="history-page fade-in delay-2" id="historyPageList">
+        <!-- populated by JS -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Floating AI button -->
+  <button class="ai-fab" id="aiFab" title="AI Assistant"><i data-lucide="bot" style="width:28px;height:28px;"></i></button>
+
+  <!-- AI Chat panel -->
+  <div class="ai-chat-popup" id="aiChatPopup">
+    <div class="chat-header">
+      <h4><span class="status-dot"></span> AI Assistant</h4>
+      <div class="chat-header-actions">
+        <button class="btn btn-icon btn-danger" id="clearChatBtn" title="Clear history" style="width:32px;height:32px;font-size:0.85rem"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>
+        <button class="btn btn-icon btn-secondary" id="closeChatBtn" style="width:32px;height:32px;font-size:0.9rem"><i data-lucide="x" style="width:16px;height:16px"></i></button>
+      </div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg bot">Hi! <i data-lucide="hand" style="width:16px;height:16px;display:inline-block;vertical-align:-3px;"></i> Click any report below, then ask me about it.</div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="Ask something…" autocomplete="off">
+      <button id="chatSendBtn"><i data-lucide="send" style="width:18px;height:18px;margin-left:2px;margin-top:2px;"></i></button>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+<script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

@@ -77,6 +77,25 @@ def main():
     else:
         print("  ℹ️   Admin user already exists")
 
+    # ── Seed: Test / demo user ─────────────────────────────────────────────────
+    if not db.users.find_one({"email": "rafay@test.com"}):
+        import bcrypt as _bcrypt
+        test_pw = _bcrypt.hashpw(b"Test@1234", _bcrypt.gensalt())
+        db.users.insert_one({
+            "name":          "Rafay Ahmed",
+            "email":         "rafay@test.com",
+            "passwordHash":  test_pw,
+            "role":          "user",
+            "industry":      "software",
+            "createdAt":     datetime.now(timezone.utc),
+            "lastLoginAt":   None,
+            "loginAttempts": 0,
+            "lockedUntil":   None,
+        })
+        print("  ✅  Seeded: test user  (email: rafay@test.com, password: Test@1234)")
+    else:
+        print("  ℹ️   Test user already exists")
+
     # ── Summary ────────────────────────────────────────────────────────────────
     print("\n✨  Database ready! Collections:")
     for name in db.list_collection_names():

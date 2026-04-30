@@ -29,9 +29,18 @@ def register():
     name     = sanitize_string(data.get("name", ""), 100)
     email    = sanitize_string(data.get("email", ""), 200).lower()
     password = data.get("password", "")
+    current_role = sanitize_string(data.get("currentRole", ""), 100)
+    linkedin_url = sanitize_string(data.get("linkedInUrl", ""), 200)
+    
+    experience_years = data.get("experienceYears")
+    if experience_years is not None:
+        try:
+            experience_years = int(experience_years)
+        except ValueError:
+            experience_years = None
 
-    if not all([name, email, password]):
-        return jsonify({"error": "name, email, and password are required"}), 400
+    if not all([name, email, password, current_role, experience_years is not None, linkedin_url]):
+        return jsonify({"error": "All fields are required"}), 400
 
     if not validate_email(email):
         return jsonify({"error": "Invalid email format"}), 400
@@ -45,7 +54,7 @@ def register():
         return jsonify({"error": "Email already registered"}), 409
 
     hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-    result = users.insert_one(new_user(name, email, hashed))
+    result = users.insert_one(new_user(name, email, hashed, current_role, experience_years, linkedin_url))
     user_id = str(result.inserted_id)
 
     access_token  = create_access_token(identity=user_id, additional_claims={"role": "user"})

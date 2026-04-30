@@ -1,214 +1,460 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Your detailed resume analysis report from ResumeChecker.">
-    <title>ResumeChecker — Resume Report</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Report — ResumeAI</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%233b82f6'/><text x='16' y='22' text-anchor='middle' font-family='Arial,sans-serif' font-size='18' font-weight='bold' fill='white'>R</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    (function() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <style>
+    .gen-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    .gen-tab { 
+      padding: 0.5rem 1rem; 
+      border-radius: var(--radius-full); 
+      background: var(--card); 
+      border: 1px solid var(--border); 
+      color: var(--sub); 
+      cursor: pointer; 
+      font-size: 0.85rem; 
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    .gen-tab.active { background: var(--blue); color: white; border-color: var(--blue); }
+    
+    .subject-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .subject-label { color: var(--muted); font-size: 0.75rem; margin-right: 0.5rem; font-weight: 600; text-transform: uppercase; }
+    .subject-text { color: var(--text); font-size: 0.9rem; flex: 1; margin: 0 1rem; }
+    .copy-icon-btn { color: var(--sub); cursor: pointer; transition: var(--transition); background: none; border: none; padding: 4px; border-radius: 4px; }
+    .copy-icon-btn:hover { color: var(--blue); background: rgba(59,130,246,0.1); }
+    
+    #ceTextarea, #clTextarea {
+      width: 100%;
+      min-height: 220px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      padding: 1.25rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      resize: vertical;
+      margin-bottom: 0.5rem;
+      transition: border-color 0.2s;
+    }
+    #ceTextarea:focus, #clTextarea:focus {
+      outline: none;
+      border-color: var(--blue);
+      background: rgba(255,255,255,0.04);
+    }
+  </style>
 </head>
-
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="container">
-            <a href="index.html" class="navbar-brand">
-                <span class="logo-icon">✦</span>
-                ResumeChecker
-            </a>
-            <ul class="navbar-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="report.html" class="active">Reports</a></li>
-                <li><a href="#">Tools</a></li>
-            </ul>
-            <div class="navbar-actions">
-                <a href="dashboard.html" class="btn btn-secondary btn-sm">← Back to Dashboard</a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="report-page">
-        <div class="dashboard-layout">
-            <!-- Sidebar -->
-            <aside class="sidebar" id="sidebar">
-                <div class="sidebar-section">
-                    <div class="sidebar-section-title">Main</div>
-                    <a href="index.html" class="sidebar-link"><span class="link-icon">🏠</span> Home</a>
-                    <a href="dashboard.html" class="sidebar-link"><span class="link-icon">📊</span> Dashboard</a>
-                    <a href="report.html" class="sidebar-link active"><span class="link-icon">📝</span> Reports</a>
-                </div>
-                <div class="sidebar-section">
-                    <div class="sidebar-section-title">Workspace</div>
-                    <a href="#" class="sidebar-link"><span class="link-icon">📁</span> Projects</a>
-                    <a href="#" class="sidebar-link"><span class="link-icon">✅</span> Tasks</a>
-                </div>
-            </aside>
-
-            <!-- Main Content -->
-            <main class="dashboard-main">
-                <div class="dashboard-header fade-in">
-                    <div class="dashboard-greeting">
-                        <h1>Resume Report</h1>
-                        <p>Detailed analysis of your latest resume • Updated today</p>
-                    </div>
-                </div>
-
-                <!-- Overall Gauge -->
-                <div class="report-gauge-section fade-in delay-1">
-                    <div class="gauge-container" id="reportGauge">
-                        <svg viewBox="0 0 220 220" width="220" height="220">
-                            <defs>
-                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" stop-color="#7c5cfc" />
-                                    <stop offset="100%" stop-color="#5c9cfc" />
-                                </linearGradient>
-                            </defs>
-                            <circle class="gauge-bg" cx="110" cy="110" r="90" />
-                            <circle class="gauge-fill" cx="110" cy="110" r="90" id="gaugeFill" />
-                        </svg>
-                        <div class="gauge-text">
-                            <div class="gauge-number text-gradient" id="gaugeNumber">0%</div>
-                            <div class="gauge-label">Overall Score</div>
-                        </div>
-                    </div>
-                    <p>Your resume scores above average but there's room for improvement. Focus on the suggestions below
-                        to boost your score.</p>
-                </div>
-
-                <!-- Metric Cards -->
-                <div class="metrics-grid fade-in delay-2">
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <div class="metric-icon" style="background:rgba(124,92,252,0.1);color:#7c5cfc">🔑</div>
-                            <span class="badge badge-primary">Good</span>
-                        </div>
-                        <div class="metric-score">75%</div>
-                        <div class="metric-name">Keyword Analysis</div>
-                        <div class="metric-bar">
-                            <div class="metric-bar-fill" data-width="75"></div>
-                        </div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <div class="metric-icon" style="background:rgba(52,211,153,0.1);color:#34d399">💬</div>
-                            <span class="badge badge-success">Good</span>
-                        </div>
-                        <div class="metric-score">74%</div>
-                        <div class="metric-name">Soft Skills</div>
-                        <div class="metric-bar">
-                            <div class="metric-bar-fill" data-width="74"></div>
-                        </div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <div class="metric-icon" style="background:rgba(251,191,36,0.1);color:#fbbf24">🏆</div>
-                            <span class="badge badge-warning">Fair</span>
-                        </div>
-                        <div class="metric-score">69%</div>
-                        <div class="metric-name">Achievement Impact</div>
-                        <div class="metric-bar">
-                            <div class="metric-bar-fill" data-width="69"></div>
-                        </div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <div class="metric-icon" style="background:rgba(248,113,113,0.1);color:#f87171">📈</div>
-                            <span class="badge badge-warning">Fair</span>
-                        </div>
-                        <div class="metric-score">67%</div>
-                        <div class="metric-name">ATS Trends</div>
-                        <div class="metric-bar">
-                            <div class="metric-bar-fill" data-width="67"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Explanations -->
-                <div class="explanations-section fade-in delay-3">
-                    <h2>Score Breakdown</h2>
-                    <div class="explanation-item">
-                        <div class="exp-icon">🔑</div>
-                        <div>
-                            <h4>Keyword Analysis — 75%</h4>
-                            <p>Your resume contains most industry-relevant keywords, but you're missing some critical
-                                terms like "CI/CD", "microservices", and "agile methodology" that appear frequently in
-                                job listings in your field.</p>
-                        </div>
-                    </div>
-                    <div class="explanation-item">
-                        <div class="exp-icon">💬</div>
-                        <div>
-                            <h4>Soft Skills — 74%</h4>
-                            <p>You demonstrate communication and teamwork skills through your experience descriptions.
-                                Consider adding more examples of leadership, mentoring, or cross-functional
-                                collaboration.</p>
-                        </div>
-                    </div>
-                    <div class="explanation-item">
-                        <div class="exp-icon">🏆</div>
-                        <div>
-                            <h4>Achievement Impact — 69%</h4>
-                            <p>Some achievements lack quantifiable results. Instead of "Improved performance", try
-                                "Improved API response time by 40%, reducing p95 latency from 800ms to 480ms". Numbers
-                                make impact tangible.</p>
-                        </div>
-                    </div>
-                    <div class="explanation-item">
-                        <div class="exp-icon">📈</div>
-                        <div>
-                            <h4>ATS Trends — 67%</h4>
-                            <p>Your resume format is mostly ATS-friendly but uses some custom section headers that may
-                                not be recognized. Stick to standard sections: "Experience", "Education", "Skills",
-                                "Projects".</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Suggestions -->
-                <div class="suggestions-section fade-in delay-4">
-                    <h2>Improvement Suggestions</h2>
-                    <div class="suggestion-item">
-                        <span class="suggestion-check">○</span>
-                        <span class="suggestion-text">Add missing keywords: <strong>CI/CD, microservices, agile, Docker,
-                                Kubernetes</strong></span>
-                        <span class="badge badge-danger suggestion-priority">High</span>
-                    </div>
-                    <div class="suggestion-item">
-                        <span class="suggestion-check">○</span>
-                        <span class="suggestion-text">Quantify achievements — use numbers, percentages, and
-                            metrics</span>
-                        <span class="badge badge-danger suggestion-priority">High</span>
-                    </div>
-                    <div class="suggestion-item">
-                        <span class="suggestion-check">○</span>
-                        <span class="suggestion-text">Rename custom sections to standard ATS-recognized headers</span>
-                        <span class="badge badge-warning suggestion-priority">Medium</span>
-                    </div>
-                    <div class="suggestion-item">
-                        <span class="suggestion-check">○</span>
-                        <span class="suggestion-text">Add a professional summary at the top of your resume</span>
-                        <span class="badge badge-warning suggestion-priority">Medium</span>
-                    </div>
-                    <div class="suggestion-item">
-                        <span class="suggestion-check">○</span>
-                        <span class="suggestion-text">Include examples of leadership and mentoring experience</span>
-                        <span class="badge badge-primary suggestion-priority">Low</span>
-                    </div>
-                    <div class="suggestion-item">
-                        <span class="suggestion-check">○</span>
-                        <span class="suggestion-text">Add relevant certifications (AWS, Google Cloud, etc.)</span>
-                        <span class="badge badge-primary suggestion-priority">Low</span>
-                    </div>
-                </div>
-
-            </main>
-        </div>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        
+        ResumeChecker
+      </a>
+      <ul class="navbar-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="report.html" class="active">Reports</a></li>
+        <li><a href="how_it_works.html">How It Works</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <button class="btn btn-icon btn-secondary" id="themeToggle" title="Toggle Theme" style="margin-right: 4px;">
+          <i data-lucide="moon"></i>
+        </button>
+        <a href="onboarding.html" class="btn btn-secondary btn-sm">New Analysis</a>
+        <button class="btn btn-icon btn-secondary" id="sidebarToggle" style="display:none">☰</button>
+        <button class="btn btn-secondary btn-sm" id="logoutBtn">Sign Out</button>
+      </div>
     </div>
+  </nav>
 
-    <script src="js/main.js"></script>
+  <!-- Copy Report button — fixed, populated by JS -->
+  <button class="copy-report-btn" id="copyReportBtn" title="Copy report to clipboard">
+    <i data-lucide="clipboard" style="width:16px;height:16px;display:inline-block;vertical-align:-3px;"></i> Copy Report
+  </button>
+
+  <div class="report-page">
+    <div class="dashboard-layout">
+
+      <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Main</div>
+          <a href="dashboard.html" class="sidebar-link"><i data-lucide="layout-dashboard" class="link-icon"></i> Dashboard</a>
+          <a href="history.html" class="sidebar-link active"><i data-lucide="file-text" class="link-icon"></i> Reports</a>
+          <a href="how_it_works.html" class="sidebar-link"><i data-lucide="help-circle" class="link-icon"></i> How It Works</a>
+        </div>
+      </aside>
+
+      <main class="dashboard-main">
+
+        <!-- HERO GAUGE -->
+        <div class="report-hero fade-in">
+          <div class="gauge-container">
+            <svg viewBox="0 0 200 200" width="200" height="200">
+              <defs>
+                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#3b82f6"/>
+                  <stop offset="100%" stop-color="#818cf8"/>
+                </linearGradient>
+              </defs>
+              <circle class="gauge-bg" cx="100" cy="100" r="90"/>
+              <circle class="gauge-fill" cx="100" cy="100" r="90" id="gaugeFill"/>
+            </svg>
+            <div class="gauge-text">
+              <div class="gauge-number text-gradient" id="gaugeNumber">0%</div>
+              <div class="gauge-label">Overall Score</div>
+            </div>
+          </div>
+          <div class="report-hero-meta">
+            <div id="reportGrade" style="margin-bottom:0.5rem"></div>
+            <h2 id="reportJobTitle">Resume Report</h2>
+            <p id="reportCandidateName"></p>
+          </div>
+        </div>
+
+        <!-- SUMMARY BLOCKQUOTE -->
+        <blockquote class="report-summary fade-in delay-1" id="reportSummaryText">
+          Analyzing your resume…
+        </blockquote>
+
+        <!-- SCORE CARDS -->
+        <div class="scores-grid fade-in delay-2" id="scoresGrid">
+          <!-- populated by loadReportData() -->
+        </div>
+
+        <!-- KEYWORDS -->
+        <div class="keywords-section fade-in delay-2" id="keywordsSection">
+          <div class="keywords-box">
+            <h4>Found Keywords</h4>
+            <div class="tags-wrap" id="foundKeywordsTags"></div>
+          </div>
+          <div class="keywords-box">
+            <h4>Missing Keywords</h4>
+            <div class="tags-wrap" id="missingKeywordsTags"></div>
+          </div>
+        </div>
+
+        <!-- SOFT SKILLS -->
+        <div class="pills-section fade-in delay-3" id="softSkillsSection">
+          <h4>Soft Skills Detected</h4>
+          <div class="tags-wrap" id="softSkillsTags"></div>
+        </div>
+
+        <!-- ATS PENALTIES -->
+        <div class="pills-section fade-in delay-3" id="atsPenaltiesSection" style="display:none">
+          <h4>ATS Issues</h4>
+          <div class="tags-wrap" id="atsPenaltiesTags"></div>
+        </div>
+
+        <!-- AI SUGGESTIONS -->
+        <div class="fade-in delay-3" id="explanationsSection">
+          <!-- populated by loadReportData() -->
+        </div>
+
+        <!-- IMPROVEMENT LIST -->
+        <div class="improvements-section fade-in delay-4" id="suggestionsSection">
+          <!-- populated by loadReportData() -->
+        </div>
+
+        <!-- AI GENERATOR SECTION -->
+        <div class="cover-letter-section fade-in delay-4" id="generatorSection">
+          <div class="gen-tabs">
+            <button class="gen-tab active" data-target="cover-letter">Cover Letter</button>
+            <button class="gen-tab" data-target="cold-email">Cold Email</button>
+          </div>
+
+          <!-- Tab: Cover Letter -->
+          <div id="tab-cover-letter" class="tab-content">
+            <div class="cl-header">
+              <i data-lucide="file-text" style="width:20px;height:20px;color:var(--blue)"></i>
+              <h2>Cover Letter Generator</h2>
+            </div>
+            
+            <p class="cl-signin-msg" id="clSigninMsg" style="display:none">
+              <i data-lucide="lock" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"></i>
+              Sign in to generate a cover letter tailored to this analysis.
+            </p>
+
+            <div id="clControls">
+              <div class="cl-tone-row">
+                <button class="cl-tone-btn active" data-tone="professional">Professional</button>
+                <button class="cl-tone-btn" data-tone="casual">Casual</button>
+                <button class="cl-tone-btn" data-tone="enthusiastic">Enthusiastic</button>
+              </div>
+              <button class="btn-screen" id="clGenerateBtn" style="margin-top:1rem">
+                <i data-lucide="sparkles" style="width:16px;height:16px"></i>
+                Generate Cover Letter
+              </button>
+            </div>
+
+            <div id="clSkeleton" style="display:none;margin-top:1.5rem">
+              <div class="skeleton" style="height:22px;margin-bottom:0.75rem;border-radius:6px"></div>
+              <div class="skeleton" style="height:22px;width:85%;margin-bottom:0.75rem;border-radius:6px"></div>
+              <div class="skeleton" style="height:22px;width:70%;margin-bottom:1.25rem;border-radius:6px"></div>
+              <div class="skeleton" style="height:22px;margin-bottom:0.75rem;border-radius:6px"></div>
+              <div class="skeleton" style="height:22px;width:90%;margin-bottom:0.75rem;border-radius:6px"></div>
+              <div class="skeleton" style="height:22px;width:60%;margin-bottom:1.25rem;border-radius:6px"></div>
+            </div>
+
+            <div id="clResult" style="display:none;margin-top:1.5rem">
+              <textarea id="clTextarea" spellcheck="true"></textarea>
+              <p class="cl-word-count" id="clWordCount">0 words</p>
+              <div class="cl-actions">
+                <button class="btn btn-secondary" id="clCopyBtn">
+                  <i data-lucide="clipboard" style="width:15px;height:15px"></i> Copy to Clipboard
+                </button>
+                <button class="btn btn-secondary" id="clDownloadBtn">
+                  <i data-lucide="download" style="width:15px;height:15px"></i> Download .txt
+                </button>
+              </div>
+              <button class="btn btn-secondary" id="clRegenBtn" style="margin-top:0.75rem;width:100%;justify-content:center">
+                <i data-lucide="refresh-cw" style="width:14px;height:14px"></i> Regenerate
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab: Cold Email -->
+          <div id="tab-cold-email" class="tab-content" style="display:none">
+            <div class="cl-header">
+              <i data-lucide="mail" style="width:20px;height:20px;color:var(--blue)"></i>
+              <h2>Cold Email Generator</h2>
+            </div>
+
+            <p class="cl-signin-msg" id="ceSigninMsg" style="display:none">
+              <i data-lucide="lock" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"></i>
+              Sign in to generate a cold email tailored to this analysis.
+            </p>
+
+            <div id="ceControls">
+              <div class="cl-tone-row">
+                <button class="cl-tone-btn ce-tone-btn active" data-tone="professional">Professional</button>
+                <button class="cl-tone-btn ce-tone-btn" data-tone="casual">Casual</button>
+                <button class="cl-tone-btn ce-tone-btn" data-tone="enthusiastic">Enthusiastic</button>
+              </div>
+              <button class="btn-screen" id="ceGenerateBtn" style="margin-top:1rem">
+                <i data-lucide="sparkles" style="width:16px;height:16px"></i>
+                Generate Cold Email
+              </button>
+            </div>
+
+            <div id="ceSkeleton" style="display:none;margin-top:1.5rem">
+              <div class="skeleton" style="height:22px;margin-bottom:0.75rem;border-radius:6px"></div>
+              <div class="skeleton" style="height:22px;width:90%;margin-bottom:0.75rem;border-radius:6px"></div>
+              <div class="skeleton" style="height:22px;width:75%;margin-bottom:1.25rem;border-radius:6px"></div>
+            </div>
+
+            <div id="ceResult" style="display:none;margin-top:1.5rem">
+              <div class="subject-box">
+                <span class="subject-label">Subject:</span>
+                <span class="subject-text" id="ceSubjectText"></span>
+                <button class="copy-icon-btn" id="ceCopySubjectBtn" title="Copy subject only"><i data-lucide="copy" style="width:14px;height:14px"></i></button>
+              </div>
+              <textarea id="ceTextarea" spellcheck="true" style="min-height:180px"></textarea>
+              <p class="cl-word-count" id="ceWordCount">0 words</p>
+              <div class="cl-actions">
+                <button class="btn btn-secondary" id="ceCopyFullBtn">
+                  <i data-lucide="clipboard" style="width:15px;height:15px"></i> Copy Full Email
+                </button>
+                <button class="btn btn-secondary" id="ceDownloadBtn">
+                  <i data-lucide="download" style="width:15px;height:15px"></i> Download .txt
+                </button>
+              </div>
+              <button class="btn btn-secondary" id="ceRegenBtn" style="margin-top:0.75rem;width:100%;justify-content:center">
+                <i data-lucide="refresh-cw" style="width:14px;height:14px"></i> Regenerate
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Floating AI button -->
+  <button class="ai-fab" id="aiFab" title="AI Assistant"><i data-lucide="bot" style="width:28px;height:28px;"></i></button>
+
+  <!-- AI Chat panel -->
+  <div class="ai-chat-popup" id="aiChatPopup">
+    <div class="chat-header">
+      <h4><span class="status-dot"></span> AI Assistant</h4>
+      <div class="chat-header-actions">
+        <button class="btn btn-icon btn-danger" id="clearChatBtn" title="Clear history" style="width:32px;height:32px;font-size:0.85rem"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>
+        <button class="btn btn-icon btn-secondary" id="closeChatBtn" style="width:32px;height:32px;font-size:0.9rem"><i data-lucide="x" style="width:16px;height:16px"></i></button>
+      </div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg bot">Hi! <i data-lucide="hand" style="width:16px;height:16px;display:inline-block;vertical-align:-3px;"></i> I'm your AI resume advisor. Ask me anything about your results.</div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="Ask something…" autocomplete="off">
+      <button id="chatSendBtn"><i data-lucide="send" style="width:18px;height:18px;margin-left:2px;margin-top:2px;"></i></button>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Tab Switching Logic
+    document.querySelectorAll('.gen-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.gen-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+        tab.classList.add('active');
+        document.getElementById(`tab-${tab.dataset.target}`).style.display = 'block';
+        
+        // Clear previous results as requested
+        const clResult = document.getElementById('clResult');
+        const ceResult = document.getElementById('ceResult');
+        if (clResult) clResult.style.display = 'none';
+        if (ceResult) ceResult.style.display = 'none';
+      });
+    });
+
+    // Cold Email Generator Logic
+    (function() {
+      function initColdEmail() {
+        const controls    = document.getElementById('ceControls');
+        const signinMsg   = document.getElementById('ceSigninMsg');
+        const generateBtn = document.getElementById('ceGenerateBtn');
+        const skeleton    = document.getElementById('ceSkeleton');
+        const result      = document.getElementById('ceResult');
+        const subjectText = document.getElementById('ceSubjectText');
+        const textarea    = document.getElementById('ceTextarea');
+        const wordCount   = document.getElementById('ceWordCount');
+        const copySubjectBtn = document.getElementById('ceCopySubjectBtn');
+        const copyFullBtn = document.getElementById('ceCopyFullBtn');
+        const downloadBtn = document.getElementById('ceDownloadBtn');
+        const regenBtn    = document.getElementById('ceRegenBtn');
+        const toneBtns    = document.querySelectorAll('.ce-tone-btn');
+        
+        if (!generateBtn) return;
+
+        // Check if report exists in sessionStorage (mirrors main.js logic)
+        let rid = null;
+        try { rid = JSON.parse(sessionStorage.getItem('lastReport'))?.report_id; } catch(e){}
+        
+        if (!rid) {
+          controls.style.display = 'none';
+          signinMsg.style.display = '';
+          return;
+        }
+
+        let selectedTone = 'professional';
+        toneBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            toneBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedTone = btn.dataset.tone;
+          });
+        });
+
+        async function generate() {
+          generateBtn.disabled = true;
+          if (regenBtn) regenBtn.disabled = true;
+          result.style.display = 'none';
+          skeleton.style.display = '';
+
+          try {
+            // Re-using apiFetch concept but locally defined to avoid dependency if needed
+            // Actually main.js is loaded, but its functions are in a closure. 
+            // I'll re-define a simple fetch here.
+            const csrf = document.cookie.split('; ').find(r => r.startsWith('csrf_access_token='))?.split('=')[1];
+            const headers = { 'Content-Type': 'application/json' };
+            if (csrf) headers['X-CSRF-TOKEN'] = decodeURIComponent(csrf);
+
+            const r = await fetch('/api/resume/cold-email', {
+              method: 'POST',
+              credentials: 'include',
+              headers: headers,
+              body: JSON.stringify({ report_id: rid, tone: selectedTone })
+            });
+            const data = await r.json();
+
+            skeleton.style.display = 'none';
+
+            if (!r.ok) {
+              alert(data.error || 'Generation failed');
+            } else {
+              subjectText.textContent = data.subject || '';
+              textarea.value = data.body || '';
+              
+              const words = textarea.value.trim().split(/\s+/).filter(Boolean).length;
+              wordCount.textContent = `${words} word${words !== 1 ? 's' : ''}`;
+              
+              result.style.display = '';
+              if (downloadBtn) {
+                const safe = (data.job_title || 'cold_email').replace(/[^a-z0-9_\-]/gi, '_');
+                downloadBtn.dataset.filename = `${safe}_cold_email.txt`;
+              }
+            }
+          } catch (e) {
+            skeleton.style.display = 'none';
+            alert('Generation failed');
+          } finally {
+            generateBtn.disabled = false;
+            if (regenBtn) regenBtn.disabled = false;
+          }
+        }
+
+        generateBtn.addEventListener('click', generate);
+        regenBtn?.addEventListener('click', generate);
+        
+        textarea?.addEventListener('input', () => {
+          const words = textarea.value.trim().split(/\s+/).filter(Boolean).length;
+          wordCount.textContent = `${words} word${words !== 1 ? 's' : ''}`;
+        });
+
+        copySubjectBtn?.addEventListener('click', () => {
+          navigator.clipboard.writeText(subjectText.textContent).then(() => alert('Subject copied!'));
+        });
+
+        copyFullBtn?.addEventListener('click', () => {
+          const text = `Subject: ${subjectText.textContent}\n\n${textarea.value}`;
+          navigator.clipboard.writeText(text).then(() => alert('Full email copied!'));
+        });
+
+        downloadBtn?.addEventListener('click', () => {
+          const text = `Subject: ${subjectText.textContent}\n\n${textarea.value}`;
+          const blob = new Blob([text], { type: 'text/plain' });
+          const url  = URL.createObjectURL(blob);
+          const a    = document.createElement('a');
+          a.href = url; a.download = downloadBtn.dataset.filename || 'cold_email.txt';
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+      }
+
+      // Check for report_id repeatedly or wait for reportData
+      const checkTimer = setInterval(() => {
+        if (sessionStorage.getItem('lastReport')) {
+          initColdEmail();
+          clearInterval(checkTimer);
+        }
+      }, 500);
+    })();
+
+    lucide.createIcons();
+  </script>
 </body>
-
 </html>

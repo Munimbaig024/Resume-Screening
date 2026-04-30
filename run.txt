@@ -5,4 +5,7 @@ pip install -r requirements.txt
 python setup_db.py   ← creates all collections, indexes, admin user
 
 # 2. Run app
-python app.py        ← http://localhost:5000
+python backend/app.py        ← http://localhost:5000
+
+
+python tests/run_tests.py

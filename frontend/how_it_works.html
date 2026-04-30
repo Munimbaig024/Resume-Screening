@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How It Works — ResumeChecker</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%233b82f6'/><text x='16' y='22' text-anchor='middle' font-family='Arial,sans-serif' font-size='18' font-weight='bold' fill='white'>R</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    (function() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <style>
+    /* Custom styles for standalone How It Works page */
+    .hiw-page { padding: 4rem 0; }
+    
+    .hiw-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .hiw-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: var(--transition);
+    }
+    .hiw-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .hiw-card h3 { 
+      font-family: 'Sora', sans-serif; 
+      font-size: 1.1rem; 
+      margin-bottom: 0.5rem; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    .hiw-card .weight { font-size: 0.8rem; color: var(--blue); background: rgba(59,130,246,0.1); padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); }
+    .hiw-card p { font-size: 0.9rem; color: var(--sub); }
+
+    .thresholds {
+      margin-top: 4rem;
+      padding: 2rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .threshold-scale {
+      height: 12px;
+      background: #222;
+      border-radius: 6px;
+      margin: 2rem 0 1rem;
+      position: relative;
+      display: flex;
+    }
+    .t-segment { height: 100%; flex: 1; }
+    .t-segment.poor { background: var(--danger); border-radius: 6px 0 0 6px; }
+    .t-segment.needs-work { background: var(--warning); }
+    .t-segment.good { background: var(--blue); }
+    .t-segment.excellent { background: var(--success); border-radius: 0 6px 6px 0; }
+    
+    .t-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); }
+    
+    .info-block {
+      margin-top: 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 768px) { .info-block { grid-template-columns: 1fr; } }
+    
+    .info-box {
+      padding: 2rem;
+      background: rgba(59,130,246,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .info-box h2 { font-family: 'Sora', sans-serif; font-size: 1.4rem; margin-bottom: 1rem; color: var(--text); }
+    .info-box p { font-size: 0.95rem; color: var(--sub); }
+
+    .tips-list { margin-top: 1rem; list-style: none; }
+    .tips-list li { margin-bottom: 0.75rem; display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.9rem; color: var(--sub); }
+    .tips-list li i { color: var(--success); margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">ResumeChecker</a>
+      <div class="navbar-actions">
+        <button class="btn btn-icon btn-secondary" id="themeToggle" title="Toggle Theme" style="margin-right: 4px;">
+          <i data-lucide="moon"></i>
+        </button>
+        <a href="index.html" class="btn btn-secondary btn-sm">Home</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container hiw-page">
+    <div class="fade-in">
+      <h1 style="font-family:'Sora',sans-serif; font-weight:800; font-size:3rem; line-height:1.1;">How <span class="text-gradient">ResumeAI</span> Works</h1>
+      <p style="font-size:1.25rem; color:var(--sub); margin-top:0.75rem; max-width:700px;">Understand exactly how your resume is scored and what you can do to land more interviews.</p>
+    </div>
+
+    <!-- Scoring Modules -->
+    <section style="margin-top: 4rem;">
+      <h2 style="font-family:'Sora',sans-serif; font-size:1.8rem; margin-bottom:1.5rem;">The 5 Scoring Modules</h2>
+      <div class="hiw-grid">
+        <div class="hiw-card">
+          <h3>Keyword Score <span class="weight">30%</span></h3>
+          <p>Checks overlap with industry keywords and job description terms. This ensures you're using the technical vocabulary that recruiters and ATS filters look for.</p>
+        </div>
+        <div class="hiw-card">
+          <h3>Achievement Score <span class="weight">25%</span></h3>
+          <p>Looks for action verbs and quantified results (%, $, numbers). We prioritize bullet points that demonstrate impact rather than just listing responsibilities.</p>
+        </div>
+        <div class="hiw-card">
+          <h3>ATS Score <span class="weight">20%</span></h3>
+          <p>Checks formatting, section headings, and word count (target: 300-1400). We flag special characters or complex layouts that might break automated parsers.</p>
+        </div>
+        <div class="hiw-card">
+          <h3>Soft Skills Score <span class="weight">15%</span></h3>
+          <p>Detects 19 key soft skill terms like leadership, teamwork, and communication. These are critical for cultural fit and behavioral screening.</p>
+        </div>
+        <div class="hiw-card">
+          <h3>Completeness Score <span class="weight">10%</span></h3>
+          <p>Ensures your resume has all essential parts: Summary, Experience, Education, Skills, and Contact sections.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Grade Thresholds -->
+    <section class="thresholds fade-in" style="animation-delay: 0.2s">
+      <h2 style="font-family:'Sora',sans-serif; font-size:1.6rem;">Grade Thresholds</h2>
+      <p style="color:var(--sub); font-size:1rem;">Your final score determines your overall grade</p>
+      <div class="threshold-scale">
+        <div class="t-segment poor"></div>
+        <div class="t-segment needs-work"></div>
+        <div class="t-segment good"></div>
+        <div class="t-segment excellent"></div>
+      </div>
+      <div class="t-labels">
+        <span>0-54 Poor</span>
+        <span>55-69 Needs Work</span>
+        <span>70-84 Good</span>
+        <span>85-100 Excellent</span>
+      </div>
+    </section>
+
+    <!-- RAG & AI -->
+    <div class="info-block fade-in" style="animation-delay: 0.4s">
+      <div class="info-box">
+        <h2>Semantic Match (RAG)</h2>
+        <p>When you paste a job description, ResumeAI goes beyond simple keyword matching. We use AI embeddings (FAISS) to measure the semantic similarity between your experience and the job requirements. This captures your "fit" even if you use different wording than the JD.</p>
+      </div>
+      <div class="info-box">
+        <h2>AI Suggestions</h2>
+        <p>Powered by the Groq LLM, we generate personalized feedback for every screening. You'll get concrete rewrites for weak bullet points, identified keyword gaps, and actionable "Quick Wins" categorized by priority levels.</p>
+      </div>
+    </div>
+
+    <!-- Tips -->
+    <section class="info-box fade-in" style="margin-top: 2rem; animation-delay: 0.6s">
+      <h2>How to Get the Best Score</h2>
+      <ul class="tips-list">
+        <li><i data-lucide="check-circle"></i> Keep your word count between 300 and 1400 words.</li>
+        <li><i data-lucide="check-circle"></i> Use strong action verbs (e.g., "Led", "Optimized", "Scaled") and avoid passive language.</li>
+        <li><i data-lucide="check-circle"></i> Quantify your achievements—use percentages, dollar amounts, and headcount numbers.</li>
+        <li><i data-lucide="check-circle"></i> Always paste the job description to unlock the deep semantic matching analysis.</li>
+      </ul>
+    </section>
+
+    <div style="margin-top: 5rem; text-align: center; padding-bottom: 2rem;">
+      <a href="index.html" class="btn btn-primary btn-lg">Back to Home</a>
+    </div>
+
+  </main>
+
+  <script src="js/main.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

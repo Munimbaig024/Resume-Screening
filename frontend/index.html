@@ -1,102 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="ResumeChecker — AI-powered resume analysis to maximize your job search success.">
-  <title>ResumeChecker — Land Your Dream Job</title>
+  <title>ResumeAI — AI-Powered Resume Screening</title>
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%233b82f6'/><text x='16' y='22' text-anchor='middle' font-family='Arial,sans-serif' font-size='18' font-weight='bold' fill='white'>R</text></svg>">
   <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    (function() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
 </head>
+
 <body>
 
-  <!-- Navbar -->
   <nav class="navbar">
     <div class="container">
       <a href="index.html" class="navbar-brand">
-        <span class="logo-icon">✦</span>
+
         ResumeChecker
       </a>
       <ul class="navbar-links">
         <li><a href="index.html" class="active">Home</a></li>
-        <li><a href="dashboard.html">Dashboard</a></li>
-        <li><a href="report.html">Reports</a></li>
-        <li><a href="#">Tools</a></li>
+        <li><a href="how_it_works.html">How It Works</a></li>
       </ul>
-      <div class="navbar-actions">
+      <div class="navbar-actions" id="navActions">
+        <button class="btn btn-icon btn-secondary" id="themeToggle" title="Toggle Theme" style="margin-right: 4px;">
+          <i data-lucide="moon"></i>
+        </button>
         <a href="auth.html" class="btn btn-secondary btn-sm">Log In</a>
-        <a href="auth.html#signup" class="btn btn-primary btn-sm">Sign Up</a>
+        <a href="auth.html#signup" class="btn btn-primary btn-sm">Sign Up Free</a>
       </div>
     </div>
   </nav>
 
-  <!-- Hero -->
   <section class="landing-hero">
     <div class="container">
-      <div class="hero-content">
-        <!-- Left: Text -->
-        <div class="hero-text fade-in">
-          <h1>Make Your Resume <span class="text-gradient">Stand Out</span></h1>
-          <p>Our AI analyzes your resume against industry standards and ATS systems, giving you actionable insights to land more interviews.</p>
-          <div class="hero-ctas">
-            <a href="auth.html#signup" class="btn btn-primary btn-lg">Get Started Free</a>
-            <a href="#features" class="btn btn-secondary btn-lg">See How It Works</a>
-          </div>
-          <div class="hero-stats">
-            <div class="hero-stat">
-              <div class="stat-number">50K+</div>
-              <div class="stat-label">Users</div>
-            </div>
-            <div class="hero-stat">
-              <div class="stat-number">120K+</div>
-              <div class="stat-label">Resumes Checked</div>
-            </div>
-            <div class="hero-stat">
-              <div class="stat-number">87%</div>
-              <div class="stat-label">Avg. Improvement</div>
-            </div>
-          </div>
-        </div>
+      <h1>AI-powered <span class="text-gradient">resume screening</span></h1>
+      <p class="tagline">Upload your resume, paste a job description, and get a detailed score across 5 modules with
+        actionable AI feedback in seconds.</p>
+      <div class="hero-ctas">
+        <a href="auth.html#signup" class="btn btn-primary btn-lg">Get Started Free</a>
+        <a href="how_it_works.html" class="btn btn-secondary btn-lg">See How It Works</a>
+      </div>
 
-        <!-- Right: Score Ring + Chips -->
-        <div class="score-ring-container fade-in delay-2">
-          <div class="score-ring-wrapper">
-            <div class="score-ring" id="heroScoreRing">
-              <svg viewBox="0 0 250 250" width="250" height="250">
-                <defs>
-                  <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#7c5cfc"/>
-                    <stop offset="100%" stop-color="#5c9cfc"/>
-                  </linearGradient>
-                </defs>
-                <circle class="ring-bg" cx="125" cy="125" r="110"/>
-                <circle class="ring-progress" cx="125" cy="125" r="110" id="heroRingProgress"/>
-              </svg>
-              <div class="score-text">
-                <div class="score-number text-gradient" id="heroScoreNum">0%</div>
-                <div class="score-label">Resume Score</div>
-              </div>
-            </div>
-            <div class="review-chips">
-              <div class="review-chip">
-                <span class="chip-avatar">JD</span>
-                "Went from 60% to 94%!"
-              </div>
-              <div class="review-chip">
-                <span class="chip-avatar">SL</span>
-                "Landed 3 interviews in a week"
-              </div>
-              <div class="review-chip">
-                <span class="chip-avatar">MR</span>
-                "Best resume tool out there"
-              </div>
-            </div>
+      <div class="feature-cards" id="features">
+        <div class="feature-card">
+          <div class="feature-icon"><i data-lucide="bar-chart-2" style="width:32px;height:32px;color:var(--blue)"></i>
           </div>
+          <h3>5 Scoring Modules</h3>
+          <p>Keyword match, achievement impact, ATS compatibility, soft skills, and completeness — each weighted and
+            explained.</p>
         </div>
-
+        <div class="feature-card">
+          <div class="feature-icon"><i data-lucide="search" style="width:32px;height:32px;color:var(--blue)"></i></div>
+          <h3>Semantic JD Matching</h3>
+          <p>Paste any job description and get a FAISS-powered similarity score showing how well your resume aligns.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i data-lucide="bot" style="width:32px;height:32px;color:var(--blue)"></i></div>
+          <h3>AI Suggestions</h3>
+          <p>Groq-powered suggestions with concrete rewrites, priority labels, and a single quick-win recommendation.
+          </p>
+        </div>
       </div>
     </div>
   </section>
 
   <script src="js/main.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
 </body>
+
 </html>

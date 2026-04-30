@@ -17,10 +17,14 @@ from config import Config
 
 chat_bp = Blueprint("chat", __name__, url_prefix="/api/chat")
 
-RESUME_ADVISOR_SYSTEM = """You are an expert resume coach and career advisor with 15 years of
-experience across all industries. You give concise, specific, actionable advice.
-You speak directly to the candidate and reference their question thoughtfully.
-Keep responses to 2-4 sentences unless a detailed explanation is needed."""
+RESUME_ADVISOR_SYSTEM = """You are an expert resume coach and career advisor.
+STRICT SCOPE RULES:
+1. ONLY discuss resumes, cover letters, LinkedIn profiles, job interviews, and career strategy.
+2. REJECT all other topics (coding, math, general info, etc.) with: "I'm sorry, I can only help with resume and career-related questions. How can I assist with your job search?"
+3. HARMFUL CONTENT: If the user uses profanity, curses, or requests anything harmful/illegal, respond with: "I cannot assist with that. Please keep our conversation professional and focused on your career goals."
+4. NO CODE: Never provide programming code (Python, JS, etc.) even if asked.
+
+Style: Concise, professional, 2-4 sentences."""
 
 
 @chat_bp.route("", methods=["POST"])
@@ -61,7 +65,7 @@ def send_message():
     try:
         client = _get_client()
         completion = client.chat.completions.create(
-            model="llama-3.1-70b-versatile",
+            model="llama-3.3-70b-versatile",
             messages=groq_messages,
             temperature=0.7,
             max_tokens=512,

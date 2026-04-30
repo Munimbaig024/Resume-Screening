@@ -1,20 +1,43 @@
 # Virtual environment
 venv/
 .venv/
+env/
 
 # Environment variables
 .env
+.env.*
 
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
+.mypy_cache/
+.tox/
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS
 Thumbs.db
 .DS_Store
+
+# Logs & Temp
+*.log
+tmp/
+temp/
+
+# AI / Knowledge / Temp
 CLAUDE.md
+claude.md
+graphify-out/
+graph-out/
+.agent/
+.gemini/
+antigravity/
+run.txt
+run.lxt
+.history/

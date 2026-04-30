@@ -11,3 +11,6 @@ faiss-cpu
 groq
 bcrypt
 cryptography
+graphifyy
+pytest 
+requests
