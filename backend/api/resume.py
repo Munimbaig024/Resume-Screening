@@ -418,13 +418,23 @@ def search_jobs():
     if country not in VALID_COUNTRIES:
         country = "us"
 
-    params = urllib.parse.urlencode({
+    max_days = request.args.get("max_days_old", "0").strip()
+    try:
+        max_days = int(max_days)
+    except:
+        max_days = 0
+
+    adzuna_params = {
         "app_id":          Config.ADZUNA_APP_ID,
         "app_key":         Config.ADZUNA_APP_KEY,
-        "results_per_page": 8,
+        "results_per_page": 12,  # increased for better selection
         "what":            query,
         "content-type":    "application/json",
-    })
+    }
+    if max_days > 0:
+        adzuna_params["max_days_old"] = max_days
+
+    params = urllib.parse.urlencode(adzuna_params)
     url = f"https://api.adzuna.com/v1/api/jobs/{country}/search/1?{params}"
 
     try:
@@ -432,7 +442,8 @@ def search_jobs():
         with urllib.request.urlopen(req, timeout=10) as resp:
             raw = json_mod.loads(resp.read().decode())
     except Exception as e:
-        return jsonify({"jobs": [], "error": "Job search unavailable"}), 200
+        print(f"Adzuna API Error: {str(e)} | URL: {url}")
+        return jsonify({"jobs": [], "error": f"Job search unavailable: {str(e)}"}), 200
 
     results = raw.get("results", [])
     jobs = []

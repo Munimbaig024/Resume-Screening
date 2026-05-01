@@ -184,6 +184,28 @@
     }
     .country-pill:hover { border-color: var(--blue); color: var(--text); }
     .country-pill.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+    .btn-clear-file {
+      margin-left: auto;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+    .btn-clear-file:hover {
+      background: rgba(239,68,68,0.1);
+      color: #ef4444;
+    }
+    
+    .new-search-btn-container {
+      margin-left: auto;
+    }
   </style>
 </head>
 <body>
@@ -246,6 +268,9 @@
           <i data-lucide="paperclip" class="fi-icon"></i>
           <span class="fi-name" id="jobsFileName">resume.pdf</span>
           <span class="fi-size" id="jobsFileSize">0 KB</span>
+          <button class="btn-clear-file" id="clearFileBtn" title="Remove file">
+            <i data-lucide="x" style="width:14px;height:14px"></i>
+          </button>
         </div>
 
         <div class="country-selector" id="countrySelector">
@@ -256,6 +281,16 @@
           <button class="country-pill" data-code="ca">🇨🇦 Canada</button>
           <button class="country-pill" data-code="sg">🇸🇬 Singapore</button>
           <button class="country-pill" data-code="in">🇮🇳 India</button>
+        </div>
+
+        <div class="country-selector" id="freshnessSelector" style="margin-top:1.25rem">
+          <div class="country-selector-label">Date Posted</div>
+          <button class="freshness-pill country-pill active" data-days="0">Any time</button>
+          <button class="freshness-pill country-pill" data-days="1">Last 24h</button>
+          <button class="freshness-pill country-pill" data-days="3">Last 3 days</button>
+          <button class="freshness-pill country-pill" data-days="7">Last week</button>
+          <button class="freshness-pill country-pill" data-days="14">Last 14 days</button>
+          <button class="freshness-pill country-pill" data-days="30">Last month</button>
         </div>
 
         <button class="btn-screen" id="findJobsBtn" disabled style="margin-top:1rem">
@@ -282,6 +317,11 @@
         <div class="search-info-bar fade-in">
           <span class="query-pill" id="queryPill"></span>
           <span class="results-count" id="resultsCount"></span>
+          <div class="new-search-btn-container">
+            <button class="btn btn-secondary btn-sm" id="newSearchBtn">
+              <i data-lucide="refresh-cw" style="width:14px;height:14px;margin-right:6px"></i> New Search
+            </button>
+          </div>
         </div>
         <div class="jobs-grid fade-in delay-1" id="jobsGrid"></div>
       </div>
@@ -291,12 +331,17 @@
         <i data-lucide="search-x" style="width:56px;height:56px"></i>
         <h3>No jobs found</h3>
         <p>No jobs found for your profile. Try uploading a different resume.</p>
+        <button class="btn btn-primary" id="emptyStateResetBtn" style="margin-top:1.25rem">
+          <i data-lucide="upload" style="width:16px;height:16px;margin-right:8px"></i> Upload Another
+        </button>
       </div>
 
       <!-- Error state -->
       <div id="errorState" style="display:none" class="jobs-error-msg fade-in">
-        <i data-lucide="alert-circle" style="width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:6px"></i>
-        Job search is temporarily unavailable. Please try again later.
+        <div style="display:flex; align-items:center; justify-content:space-between">
+          <span><i data-lucide="alert-circle" style="width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:6px"></i> Job search is temporarily unavailable. Please try again later.</span>
+          <button class="btn btn-secondary btn-sm" id="errorResetBtn" style="margin-left:1rem; background:rgba(0,0,0,0.1)">Try Again</button>
+        </div>
       </div>
 
     </main>
@@ -337,11 +382,20 @@
     };
     let selectedCountry = 'gb';
 
-    document.querySelectorAll('.country-pill').forEach(pill => {
+    document.querySelectorAll('.country-pill:not(.freshness-pill)').forEach(pill => {
       pill.addEventListener('click', () => {
-        document.querySelectorAll('.country-pill').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.country-pill:not(.freshness-pill)').forEach(p => p.classList.remove('active'));
         pill.classList.add('active');
         selectedCountry = pill.dataset.code;
+      });
+    });
+
+    let selectedDays = 0;
+    document.querySelectorAll('.freshness-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.freshness-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        selectedDays = parseInt(pill.dataset.days);
       });
     });
 
@@ -424,14 +478,20 @@
         const csrf = getCSRF();
         const headers = {};
         if (csrf) headers['X-CSRF-TOKEN'] = csrf;
-        const r = await fetch(`/api/resume/search-jobs?report_id=${encodeURIComponent(reportId)}&country=${encodeURIComponent(selectedCountry)}`, {
+        const r = await fetch(`/api/resume/search-jobs?report_id=${encodeURIComponent(reportId)}&country=${encodeURIComponent(selectedCountry)}&max_days_old=${selectedDays}`, {
           credentials: 'include',
           headers
         });
         const data = await r.json();
 
         if (!r.ok || data.error) {
+          const errDiv = document.getElementById('errorState');
+          const errSpan = errDiv.querySelector('span');
+          if (errSpan) {
+            errSpan.innerHTML = `<i data-lucide="alert-circle" style="width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:6px"></i> ${escHtml(data.error || 'Job search is temporarily unavailable.')}`;
+          }
           showSection('errorState');
+          if (typeof lucide !== 'undefined') lucide.createIcons();
           return;
         }
         if (!data.jobs || data.jobs.length === 0) {
@@ -500,7 +560,13 @@
         const data = await r.json();
 
         if (!r.ok || !data.report_id) {
+          const errDiv = document.getElementById('errorState');
+          const errSpan = errDiv.querySelector('span');
+          if (errSpan) {
+            errSpan.innerHTML = `<i data-lucide="alert-circle" style="width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:6px"></i> ${escHtml(data.error || 'Analysis failed. Please try again.')}`;
+          }
           showSection('errorState');
+          if (typeof lucide !== 'undefined') lucide.createIcons();
           return;
         }
         sessionStorage.setItem('lastReport', JSON.stringify(data));
@@ -508,6 +574,38 @@
       } catch(e) {
         showSection('errorState');
       }
+    });
+
+    // ── Reset Search ─────────────────────────────────────────────────────────
+    function resetSearch() {
+      selectedFile = null;
+      fileInput.value = '';
+      fileInfo.classList.add('hidden');
+      findBtn.disabled = true;
+      sessionStorage.removeItem('lastJobSearch');
+      
+      // Clear report_id from URL if present
+      if (window.location.search.includes('report_id=')) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+      
+      showSection('uploadSection');
+      
+      // Reset freshness pills
+      selectedDays = 0;
+      document.querySelectorAll('.freshness-pill').forEach(p => {
+        p.classList.toggle('active', p.dataset.days === "0");
+      });
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    document.getElementById('newSearchBtn').addEventListener('click', resetSearch);
+    document.getElementById('emptyStateResetBtn').addEventListener('click', resetSearch);
+    document.getElementById('errorResetBtn').addEventListener('click', resetSearch);
+    document.getElementById('clearFileBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      resetSearch();
     });
 
     // ── Entry point ──────────────────────────────────────────────────────────
