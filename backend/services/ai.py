@@ -1,7 +1,4 @@
-"""
-services/ai.py — Groq API integration + structured prompt builder
-Sends scored resume data to Groq and gets JSON suggestions back.
-"""
+"""Groq API integration for AI suggestions."""
 import json
 import re
 from groq import Groq
@@ -18,7 +15,7 @@ def _get_client() -> Groq:
     return _client
 
 
-def _stub_response(detail: str = "") -> dict:
+def _stub_response(detail: str = "") -> dict:  
     return {
         "suggestions": [
             {
@@ -34,8 +31,6 @@ def _stub_response(detail: str = "") -> dict:
         "summary_paragraph": detail or "AI analysis unavailable. Use the scores above for guidance.",
     }
 
-
-# ── Prompt Builders ────────────────────────────────────────────────────────────
 
 def _build_system_message(job_title: str) -> str:
     return f"""You are an expert resume coach and hiring consultant with 15 years of experience hiring for {job_title} roles.
@@ -102,13 +97,8 @@ TASKS:
 4. Write a brief honest summary paragraph (2-3 sentences)"""
 
 
-# ── Groq API Call ──────────────────────────────────────────────────────────────
-
 def call_groq(system_msg: str, user_msg: str) -> dict:
-    """
-    Call Groq API with a system + user message pair.
-    Returns parsed JSON dict. Falls back to a stub dict on any failure.
-    """
+    """Call Groq API and return parsed JSON."""
     try:
         client = _get_client()
         completion = client.chat.completions.create(
@@ -135,8 +125,6 @@ def call_groq(system_msg: str, user_msg: str) -> dict:
     except json.JSONDecodeError:
         return _stub_response(raw[:500] if raw else "")
 
-
-# ── Main Entry Point ───────────────────────────────────────────────────────────
 
 def generate_suggestions(job_title: str, scores: dict, metadata: dict, jd_text: str = None) -> dict:
     """Build prompt and get AI suggestions from Groq."""

@@ -1,22 +1,14 @@
-"""
-services/extractor.py — PDF/DOCX text extraction + section & bullet parser
-"""
 import re
 import io
 import pdfplumber
 from docx import Document
 
 
-# ── Text Extraction ────────────────────────────────────────────────────────────
-
 def extract_text(file_storage) -> str:
-    """
-    Given a Flask FileStorage object, extract plain text.
-    Supports PDF and DOCX.
-    """
+    """Extract text from PDF, DOCX, or TXT files."""
     filename = file_storage.filename.lower()
     file_bytes = file_storage.read()
-    file_storage.seek(0)  # reset for potential re-use
+    file_storage.seek(0)
 
     if filename.endswith(".pdf"):
         return _extract_pdf(file_bytes)
@@ -43,9 +35,7 @@ def _extract_docx(file_bytes: bytes) -> str:
     return "\n".join(para.text for para in doc.paragraphs if para.text.strip())
 
 
-# ── Section Parser ─────────────────────────────────────────────────────────────
 
-# Common section heading patterns (case-insensitive)
 SECTION_PATTERNS = {
     "summary":    r"\b(summary|profile|objective|about me)\b",
     "experience": r"\b(experience|work history|employment|positions?)\b",
@@ -57,16 +47,11 @@ SECTION_PATTERNS = {
 
 
 def parse_sections(text: str) -> dict:
-    """
-    Split resume text into named sections.
-    Returns dict: { section_name: section_text, ... }
-    Also returns boolean presence flags.
-    """
+    """Parse resume sections and return dict with text and presence flags."""
     lines = text.split("\n")
     sections = {k: "" for k in SECTION_PATTERNS}
     current_section = "other"
 
-    # Build a quick lookup of which line starts which section
     for line in lines:
         line_stripped = line.strip()
         if not line_stripped:
@@ -81,7 +66,6 @@ def parse_sections(text: str) -> dict:
         elif current_section in sections:
             sections[current_section] += line_stripped + "\n"
 
-    # Presence flags
     flags = {
         "has_summary":    bool(sections["summary"].strip()),
         "has_experience": bool(sections["experience"].strip()),
@@ -94,9 +78,6 @@ def parse_sections(text: str) -> dict:
     }
 
     return {**sections, **flags}
-
-
-# ── Bullet Extractor ───────────────────────────────────────────────────────────
 
 def extract_bullets(experience_text: str) -> list[str]:
     """

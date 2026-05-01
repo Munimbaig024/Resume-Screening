@@ -20,8 +20,6 @@ from pymongo import MongoClient
 from datetime import datetime, timezone, timedelta
 from db.mongo import get_db, setup_indexes
 
-# ── Run ────────────────────────────────────────────────────────────────────────
-
 def main():
     print("🔧  Connecting to MongoDB...")
     try:
@@ -34,7 +32,6 @@ def main():
         print("    Make sure MongoDB is running: mongod --dbpath C:\\data\\db")
         sys.exit(1)
 
-    # ── Create all 5 collections ───────────────────────────────────────────────
     print("\n📂  Creating collections...")
     existing = db.list_collection_names()
     collections = {
@@ -52,11 +49,9 @@ def main():
         else:
             print(f"  ℹ️   Exists:  {name:10s}  — {desc}")
 
-    # ── Create indexes ─────────────────────────────────────────────────────────
     print("\n📇  Creating indexes...")
     setup_indexes()
 
-    # ── Seed: Default admin user ───────────────────────────────────────────────
     print("\n👤  Checking seed data...")
     if not db.users.find_one({"email": "admin@resumechecker.local"}):
         import bcrypt
@@ -77,7 +72,6 @@ def main():
     else:
         print("  ℹ️   Admin user already exists")
 
-    # ── Seed: Test / demo user ─────────────────────────────────────────────────
     if not db.users.find_one({"email": "rafay@test.com"}):
         import bcrypt as _bcrypt
         test_pw = _bcrypt.hashpw(b"Test@1234", _bcrypt.gensalt())
@@ -96,7 +90,6 @@ def main():
     else:
         print("  ℹ️   Test user already exists")
 
-    # ── Summary ────────────────────────────────────────────────────────────────
     print("\n✨  Database ready! Collections:")
     for name in db.list_collection_names():
         count = db[name].count_documents({})

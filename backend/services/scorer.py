@@ -1,9 +1,6 @@
-"""
-services/scorer.py — All 5 scoring modules + weighted final score
-"""
+"""Resume scoring modules."""
 import re
 
-# ── Industry Keyword Lists ─────────────────────────────────────────────────────
 
 INDUSTRY_KEYWORDS = {
     "Software Engineering": [
@@ -69,7 +66,6 @@ ACTION_VERBS = [
 ]
 
 
-# ── Module 1: Keyword Match (30%) ──────────────────────────────────────────────
 
 def keyword_score(text: str, jd_text: str) -> dict:
     # Build a master list of all known keywords across all domains
@@ -111,8 +107,6 @@ def keyword_score(text: str, jd_text: str) -> dict:
         "missing": missing[:10],
     }
 
-
-# ── Module 2: Achievement Impact (25%) ────────────────────────────────────────
 
 QUANTIFIED_PATTERNS = [
     r"\d+%",                            # 30%
@@ -158,7 +152,6 @@ def achievement_score(bullets: list[str]) -> int:
     return round(avg_score)
 
 
-# ── Module 3: ATS Format (20%) ────────────────────────────────────────────────
 
 def ats_score(text: str) -> dict:
     score = 100
@@ -200,7 +193,6 @@ def ats_score(text: str) -> dict:
     return {"score": max(score, 0), "penalties": penalties}
 
 
-# ── Module 4: Soft Skills (15%) ───────────────────────────────────────────────
 
 def soft_skills_score(text: str) -> dict:
     text_lower = text.lower()
@@ -213,7 +205,6 @@ def soft_skills_score(text: str) -> dict:
     }
 
 
-# ── Module 5: Completeness (10%) ──────────────────────────────────────────────
 
 def completeness_score(sections: dict) -> int:
     checks = {

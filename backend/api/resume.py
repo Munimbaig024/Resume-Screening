@@ -7,6 +7,9 @@ POST /api/resume/analyze
     - job_description: (str)   Full text of job description
 """
 from datetime import datetime, timezone
+import urllib.parse
+import urllib.request
+import json as json_mod
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 
@@ -33,7 +36,6 @@ def analyze():
         jwt_error = str(e)
         pass
 
-    # ── Validate inputs ────────────────────────────────────────────────────────
     if "resume" not in request.files:
         return jsonify({"error": "No resume file uploaded"}), 400
 
@@ -55,15 +57,12 @@ def analyze():
     if len(text.split()) < 50:
         return jsonify({"error": "Resume text too short — check your file"}), 400
 
-    # ── Step 2: Parse sections + bullets ──────────────────────────────────────
     sections = parse_sections(text)
     bullets  = extract_bullets(sections.get("experience", ""))
     metadata = extract_metadata(text, sections)
 
-    # ── Step 3: Run 5 scoring modules ─────────────────────────────────────────
     scores = run_all_scores(text, sections, bullets, job_title, jd_text)
 
-    # ── Step 4: JD similarity (RAG) — if job description provided ─────────────
     jd_result = None
     if jd_text:
         try:
@@ -74,7 +73,6 @@ def analyze():
             scores["jd_match"] = None
             scores["jd_error"] = str(e)
 
-    # ── Step 5: AI suggestions via Groq ───────────────────────────────────────
     try:
         ai_output = generate_suggestions(job_title, scores, metadata, jd_text)
     except Exception:
@@ -85,7 +83,6 @@ def analyze():
             "summary_paragraph": "AI suggestions are temporarily unavailable.",
         }
 
-    # ── Step 6: Save report to MongoDB (if authenticated) ─────────────────────
     report_id = None
     db_error = None
     if user_id:
@@ -365,4 +362,104 @@ SUBJECT: [subject line here]
         "body":            body_text,
         "job_title":       job_title,
         "candidate_name":  name,
+    })
+
+
+@resume_bp.route("/search-jobs", methods=["GET"])
+@jwt_required_cookie
+def search_jobs():
+    """Search Adzuna for jobs matching the resume's keywords and job title."""
+    from config import Config
+    user_id = get_jwt_identity()
+    report_id = request.args.get("report_id", "").strip()
+
+    if not report_id:
+        return jsonify({"error": "report_id is required"}), 400
+
+    try:
+        oid = ObjectId(report_id)
+    except Exception:
+        return jsonify({"error": "Invalid report_id"}), 400
+
+    db = get_db()
+    report = db.reports.find_one({"_id": oid, "userId": user_id})
+    if not report:
+        return jsonify({"error": "Report not found"}), 404
+
+    scores   = report.get("scores", {})
+    metadata = report.get("metadata", {})
+
+    job_title      = report.get("jobTitle", "")
+    found_keywords = scores.get("found_keywords", [])
+    last_role      = metadata.get("last_role", "")
+
+    if job_title and job_title != "Custom Role":
+        query = job_title
+    elif found_keywords:
+        query = " ".join(found_keywords[:3])
+    elif last_role:
+        query = last_role
+    else:
+        query = "Software Engineer"
+
+    if not Config.ADZUNA_APP_ID or not Config.ADZUNA_APP_KEY:
+        return jsonify({"jobs": [], "error": "Job search unavailable"}), 503
+
+    VALID_COUNTRIES = {"us", "gb", "au", "ca", "de", "fr", "sg", "in", "nl", "nz", "za"}
+    country = request.args.get("country", "us").strip().lower()
+    if country == "pk":
+        country = "gb"  # Adzuna has no pk endpoint; gb has the most international remote jobs
+    if country not in VALID_COUNTRIES:
+        country = "us"
+
+    max_days = request.args.get("max_days_old", "0").strip()
+    try:
+        max_days = int(max_days)
+    except:
+        max_days = 0
+
+    adzuna_params = {
+        "app_id":          Config.ADZUNA_APP_ID,
+        "app_key":         Config.ADZUNA_APP_KEY,
+        "results_per_page": 12,  # increased for better selection
+        "what":            query,
+        "content-type":    "application/json",
+    }
+    if max_days > 0:
+        adzuna_params["max_days_old"] = max_days
+
+    params = urllib.parse.urlencode(adzuna_params)
+    url = f"https://api.adzuna.com/v1/api/jobs/{country}/search/1?{params}"
+
+    try:
+        req = urllib.request.Request(url, headers={"Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            raw = json_mod.loads(resp.read().decode())
+    except Exception as e:
+        print(f"Adzuna API Error: {str(e)} | URL: {url}")
+        return jsonify({"jobs": [], "error": f"Job search unavailable: {str(e)}"}), 200
+
+    results = raw.get("results", [])
+    jobs = []
+    for r in results:
+        loc = r.get("location", {})
+        loc_str = ", ".join(filter(None, [
+            loc.get("display_name", ""),
+        ])) or "Remote"
+        jobs.append({
+            "title":       r.get("title", ""),
+            "company":     r.get("company", {}).get("display_name", ""),
+            "location":    loc_str,
+            "salary_min":  r.get("salary_min", 0) or 0,
+            "salary_max":  r.get("salary_max", 0) or 0,
+            "description": (r.get("description", "") or "")[:150],
+            "url":         r.get("redirect_url", ""),
+            "created":     r.get("created", ""),
+        })
+
+    return jsonify({
+        "jobs":          jobs,
+        "query_used":    query,
+        "country_used":  country,
+        "total_results": raw.get("count", len(jobs)),
     })

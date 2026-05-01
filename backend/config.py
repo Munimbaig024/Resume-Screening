@@ -2,7 +2,8 @@ import os
 from datetime import timedelta
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load .env from parent directory
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 class Config:
     # MongoDB
@@ -26,6 +27,10 @@ class Config:
     # Server
     PORT                    = int(os.getenv("PORT", 5000))
     DEBUG                   = os.getenv("FLASK_DEBUG", "true").lower() == "true"
+
+    # Adzuna Jobs API
+    ADZUNA_APP_ID           = os.getenv("ADZUNA_APP_ID", "")
+    ADZUNA_APP_KEY          = os.getenv("ADZUNA_APP_KEY", "")
 
     # File upload
     MAX_UPLOAD_MB           = 10

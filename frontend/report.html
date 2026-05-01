@@ -103,6 +103,7 @@
           <div class="sidebar-section-title">Main</div>
           <a href="dashboard.html" class="sidebar-link"><i data-lucide="layout-dashboard" class="link-icon"></i> Dashboard</a>
           <a href="history.html" class="sidebar-link active"><i data-lucide="file-text" class="link-icon"></i> Reports</a>
+          <a href="jobs.html" class="sidebar-link" id="findJobsLink"><i data-lucide="briefcase" class="link-icon"></i> Search Jobs</a>
           <a href="how_it_works.html" class="sidebar-link"><i data-lucide="help-circle" class="link-icon"></i> How It Works</a>
         </div>
       </aside>
@@ -142,6 +143,13 @@
         <!-- SCORE CARDS -->
         <div class="scores-grid fade-in delay-2" id="scoresGrid">
           <!-- populated by loadReportData() -->
+        </div>
+
+        <!-- FIND SIMILAR JOBS BUTTON -->
+        <div class="fade-in delay-2" id="findJobsBtnWrap" style="display:none;margin-bottom:1.5rem">
+          <a id="findJobsBtn" href="jobs.html" class="btn btn-secondary" style="display:inline-flex;align-items:center;gap:0.5rem;width:100%;justify-content:center;padding:0.75rem 1.5rem;font-size:1rem">
+            <i data-lucide="briefcase" style="width:18px;height:18px"></i> Find Similar Jobs
+          </a>
         </div>
 
         <!-- KEYWORDS -->
@@ -452,6 +460,30 @@
           clearInterval(checkTimer);
         }
       }, 500);
+    })();
+
+    // Wire up "Find Similar Jobs" button
+    (function() {
+      function initFindJobs() {
+        try {
+          const report = JSON.parse(sessionStorage.getItem('lastReport'));
+          const rid = report && report.report_id;
+          const wrap = document.getElementById('findJobsBtnWrap');
+          const btn  = document.getElementById('findJobsBtn');
+          const sidebarLink = document.getElementById('findJobsLink');
+          if (rid && wrap && btn) {
+            btn.href = `jobs.html?report_id=${encodeURIComponent(rid)}`;
+            wrap.style.display = '';
+          }
+          if (rid && sidebarLink) {
+            sidebarLink.href = `jobs.html?report_id=${encodeURIComponent(rid)}`;
+          }
+        } catch(e) {}
+      }
+      // Run after report data is available
+      const t = setInterval(() => {
+        if (sessionStorage.getItem('lastReport')) { initFindJobs(); clearInterval(t); }
+      }, 300);
     })();
 
     lucide.createIcons();

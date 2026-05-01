@@ -36,6 +36,7 @@ claude.md
 graphify-out/
 graph-out/
 .agent/
+.claude/
 .gemini/
 antigravity/
 run.txt
