@@ -27,6 +27,10 @@ class Config:
     PORT                    = int(os.getenv("PORT", 5000))
     DEBUG                   = os.getenv("FLASK_DEBUG", "true").lower() == "true"
 
+    # Adzuna Jobs API
+    ADZUNA_APP_ID           = os.getenv("ADZUNA_APP_ID", "")
+    ADZUNA_APP_KEY          = os.getenv("ADZUNA_APP_KEY", "")
+
     # File upload
     MAX_UPLOAD_MB           = 10
     ALLOWED_EXTENSIONS      = {"pdf", "docx", "doc", "txt"}
