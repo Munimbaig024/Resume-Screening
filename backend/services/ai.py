@@ -140,7 +140,11 @@ def call_groq(system_msg: str, user_msg: str) -> dict:
 
 def generate_suggestions(job_title: str, scores: dict, metadata: dict, jd_text: str = None) -> dict:
     """Build prompt and get AI suggestions from Groq."""
+    print(f"[DEBUG] generate_suggestions: GROQ_API_KEY present = {bool(Config.GROQ_API_KEY)}")
+    print(f"[DEBUG] GROQ_API_KEY value (first 20 chars): {Config.GROQ_API_KEY[:20] if Config.GROQ_API_KEY else 'EMPTY'}")
+    
     if not Config.GROQ_API_KEY:
+        print("[DEBUG] GROQ_API_KEY is empty! Returning stub response.")
         return {
             "suggestions": [],
             "missing_keywords": [],
@@ -150,4 +154,6 @@ def generate_suggestions(job_title: str, scores: dict, metadata: dict, jd_text: 
 
     system_msg = _build_system_message(job_title)
     user_msg   = _build_user_message(job_title, scores, metadata, jd_text)
-    return call_groq(system_msg, user_msg)
+    result = call_groq(system_msg, user_msg)
+    print(f"[DEBUG] Groq suggestions result: {result}")
+    return result
