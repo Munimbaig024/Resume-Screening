@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Jobs — ResumeAI</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%233b82f6'/><text x='16' y='22' text-anchor='middle' font-family='Arial,sans-serif' font-size='18' font-weight='bold' fill='white'>R</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    (function() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <style>
+    .jobs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    @media (max-width: 768px) {
+      .jobs-grid { grid-template-columns: 1fr; }
+    }
+
+    .job-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: var(--transition);
+      cursor: default;
+    }
+    .job-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 0 1px var(--blue), 0 8px 24px rgba(59,130,246,0.15);
+    }
+    .job-card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0;
+    }
+    .job-card-company {
+      color: var(--blue);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .job-card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      font-size: 0.82rem;
+      color: var(--sub);
+      margin-top: 0.25rem;
+    }
+    .job-card-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .job-card-salary { color: var(--muted); }
+    .job-card-desc {
+      font-size: 0.85rem;
+      color: var(--sub);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .job-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+    .job-date { font-size: 0.78rem; color: var(--muted); }
+    .btn-view-job {
+      padding: 0.4rem 0.9rem;
+      border-radius: var(--radius-full);
+      background: var(--blue);
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .btn-view-job:hover { opacity: 0.85; }
+
+    .search-info-bar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .query-pill {
+      background: rgba(59,130,246,0.12);
+      color: var(--blue);
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: var(--radius-full);
+      padding: 0.3rem 0.85rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .results-count { font-size: 0.85rem; color: var(--muted); }
+
+    /* skeleton */
+    .skeleton-job-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .skel-line { height: 14px; border-radius: 4px; background: var(--border); animation: shimmer 1.4s infinite; }
+    @keyframes shimmer {
+      0%   { opacity: 0.5; }
+      50%  { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+
+    .jobs-empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+    }
+    .jobs-empty-state svg { margin-bottom: 1rem; opacity: 0.4; }
+    .jobs-empty-state p { font-size: 1rem; margin-top: 0.5rem; }
+
+    .jobs-error-msg {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      color: #f87171;
+      font-size: 0.9rem;
+      margin-top: 1.5rem;
+    }
+
+    .loading-msg {
+      text-align: center;
+      color: var(--sub);
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .country-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+    .country-selector-label {
+      width: 100%;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+    }
+    .country-pill {
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-full);
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--sub);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+    .country-pill:hover { border-color: var(--blue); color: var(--text); }
+    .country-pill.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+    .btn-clear-file {
+      margin-left: auto;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+    .btn-clear-file:hover {
+      background: rgba(239,68,68,0.1);
+      color: #ef4444;
+    }
+    
+    .new-search-btn-container {
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">ResumeChecker</a>
+      <ul class="navbar-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="history.html">Reports</a></li>
+        <li><a href="jobs.html" class="active">Search Jobs</a></li>
+        <li><a href="how_it_works.html">How It Works</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <button class="btn btn-icon btn-secondary" id="themeToggle" title="Toggle Theme" style="margin-right: 4px;">
+          <i data-lucide="moon"></i>
+        </button>
+        <button class="btn btn-secondary btn-sm" id="logoutBtn">Sign Out</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Main</div>
+        <a href="dashboard.html" class="sidebar-link"><i data-lucide="layout-dashboard" class="link-icon"></i> Dashboard</a>
+        <a href="history.html" class="sidebar-link"><i data-lucide="file-text" class="link-icon"></i> Reports</a>
+        <a href="jobs.html" class="sidebar-link active"><i data-lucide="briefcase" class="link-icon"></i> Search Jobs</a>
+        <a href="how_it_works.html" class="sidebar-link"><i data-lucide="help-circle" class="link-icon"></i> How It Works</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Account</div>
+        <a href="#" class="sidebar-link" id="sidebarLogout"><i data-lucide="log-out" class="link-icon"></i> Sign Out</a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <div class="dashboard-header fade-in">
+        <div class="dashboard-greeting">
+          <h1>Find Matching Jobs</h1>
+          <p>Upload your resume and we'll find jobs that match your skills</p>
+        </div>
+      </div>
+
+      <!-- Upload section — hidden when report_id provided via URL -->
+      <div class="upload-panel fade-in delay-1" id="uploadSection">
+        <h3>Upload Your Resume</h3>
+
+        <div class="upload-drop-zone" id="jobsUploadZone">
+          <div class="upload-drop-icon"><i data-lucide="upload-cloud"></i></div>
+          <p><strong>Drag &amp; drop</strong> your resume here</p>
+          <small>Accepted: <strong>PDF</strong>, <strong>DOCX</strong> · max 10 MB</small>
+          <input type="file" id="jobsFileInput" accept=".pdf,.docx,.doc,.txt" style="display:none">
+        </div>
+
+        <div class="upload-file-info hidden" id="jobsFileInfo">
+          <i data-lucide="paperclip" class="fi-icon"></i>
+          <span class="fi-name" id="jobsFileName">resume.pdf</span>
+          <span class="fi-size" id="jobsFileSize">0 KB</span>
+          <button class="btn-clear-file" id="clearFileBtn" title="Remove file">
+            <i data-lucide="x" style="width:14px;height:14px"></i>
+          </button>
+        </div>
+
+        <div class="country-selector" id="countrySelector">
+          <div class="country-selector-label">Search country</div>
+          <button class="country-pill" data-code="us">🇺🇸 USA</button>
+          <button class="country-pill active" data-code="gb">🇬🇧 UK</button>
+          <button class="country-pill" data-code="au">🇦🇺 Australia</button>
+          <button class="country-pill" data-code="ca">🇨🇦 Canada</button>
+          <button class="country-pill" data-code="sg">🇸🇬 Singapore</button>
+          <button class="country-pill" data-code="in">🇮🇳 India</button>
+        </div>
+
+        <div class="country-selector" id="freshnessSelector" style="margin-top:1.25rem">
+          <div class="country-selector-label">Date Posted</div>
+          <button class="freshness-pill country-pill active" data-days="0">Any time</button>
+          <button class="freshness-pill country-pill" data-days="1">Last 24h</button>
+          <button class="freshness-pill country-pill" data-days="3">Last 3 days</button>
+          <button class="freshness-pill country-pill" data-days="7">Last week</button>
+          <button class="freshness-pill country-pill" data-days="14">Last 14 days</button>
+          <button class="freshness-pill country-pill" data-days="30">Last month</button>
+        </div>
+
+        <button class="btn-screen" id="findJobsBtn" disabled style="margin-top:1rem">
+          <i data-lucide="briefcase" style="width:18px;height:18px"></i> Find Matching Jobs
+        </button>
+      </div>
+
+      <!-- Loading state -->
+      <div id="loadingSection" style="display:none">
+        <p class="loading-msg"><i data-lucide="loader" style="width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:6px"></i>Analyzing resume and finding matching jobs…</p>
+        <div class="jobs-grid" id="skeletonGrid">
+          <!-- 6 skeleton cards -->
+          <div class="skeleton-job-card"><div class="skel-line" style="width:70%"></div><div class="skel-line" style="width:45%"></div><div class="skel-line" style="width:100%"></div><div class="skel-line" style="width:90%"></div><div class="skel-line" style="width:60%;margin-top:0.5rem"></div></div>
+          <div class="skeleton-job-card"><div class="skel-line" style="width:65%"></div><div class="skel-line" style="width:40%"></div><div class="skel-line" style="width:100%"></div><div class="skel-line" style="width:85%"></div><div class="skel-line" style="width:55%;margin-top:0.5rem"></div></div>
+          <div class="skeleton-job-card"><div class="skel-line" style="width:75%"></div><div class="skel-line" style="width:50%"></div><div class="skel-line" style="width:100%"></div><div class="skel-line" style="width:80%"></div><div class="skel-line" style="width:65%;margin-top:0.5rem"></div></div>
+          <div class="skeleton-job-card"><div class="skel-line" style="width:60%"></div><div class="skel-line" style="width:45%"></div><div class="skel-line" style="width:100%"></div><div class="skel-line" style="width:75%"></div><div class="skel-line" style="width:50%;margin-top:0.5rem"></div></div>
+          <div class="skeleton-job-card"><div class="skel-line" style="width:68%"></div><div class="skel-line" style="width:42%"></div><div class="skel-line" style="width:100%"></div><div class="skel-line" style="width:88%"></div><div class="skel-line" style="width:58%;margin-top:0.5rem"></div></div>
+          <div class="skeleton-job-card"><div class="skel-line" style="width:72%"></div><div class="skel-line" style="width:48%"></div><div class="skel-line" style="width:100%"></div><div class="skel-line" style="width:82%"></div><div class="skel-line" style="width:62%;margin-top:0.5rem"></div></div>
+        </div>
+      </div>
+
+      <!-- Results area -->
+      <div id="resultsSection" style="display:none">
+        <div class="search-info-bar fade-in">
+          <span class="query-pill" id="queryPill"></span>
+          <span class="results-count" id="resultsCount"></span>
+          <div class="new-search-btn-container">
+            <button class="btn btn-secondary btn-sm" id="newSearchBtn">
+              <i data-lucide="refresh-cw" style="width:14px;height:14px;margin-right:6px"></i> New Search
+            </button>
+          </div>
+        </div>
+        <div class="jobs-grid fade-in delay-1" id="jobsGrid"></div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="emptyState" style="display:none" class="jobs-empty-state fade-in">
+        <i data-lucide="search-x" style="width:56px;height:56px"></i>
+        <h3>No jobs found</h3>
+        <p>No jobs found for your profile. Try uploading a different resume.</p>
+        <button class="btn btn-primary" id="emptyStateResetBtn" style="margin-top:1.25rem">
+          <i data-lucide="upload" style="width:16px;height:16px;margin-right:8px"></i> Upload Another
+        </button>
+      </div>
+
+      <!-- Error state -->
+      <div id="errorState" style="display:none" class="jobs-error-msg fade-in">
+        <div style="display:flex; align-items:center; justify-content:space-between">
+          <span><i data-lucide="alert-circle" style="width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:6px"></i> Job search is temporarily unavailable. Please try again later.</span>
+          <button class="btn btn-secondary btn-sm" id="errorResetBtn" style="margin-left:1rem; background:rgba(0,0,0,0.1)">Try Again</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Floating AI button -->
+  <button class="ai-fab" id="aiFab" title="AI Assistant"><i data-lucide="bot" style="width:28px;height:28px;"></i></button>
+
+  <!-- AI Chat panel -->
+  <div class="ai-chat-popup" id="aiChatPopup">
+    <div class="chat-header">
+      <h4><span class="status-dot"></span> AI Assistant</h4>
+      <div class="chat-header-actions">
+        <button class="btn btn-icon btn-danger" id="clearChatBtn" title="Clear history" style="width:32px;height:32px;font-size:0.85rem"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>
+        <button class="btn btn-icon btn-secondary" id="closeChatBtn" style="width:32px;height:32px;font-size:0.9rem"><i data-lucide="x" style="width:16px;height:16px"></i></button>
+      </div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg bot">Hi! <i data-lucide="hand" style="width:16px;height:16px;display:inline-block;vertical-align:-3px;"></i> I'm your AI resume advisor. Ask me anything about jobs or your resume.</div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="Ask something…" autocomplete="off">
+      <button id="chatSendBtn"><i data-lucide="send" style="width:18px;height:18px;margin-left:2px;margin-top:2px;"></i></button>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+  (function() {
+    // ── Country config ───────────────────────────────────────────────────────
+    const COUNTRY_LABELS = {
+      us: '🇺🇸 USA',
+      gb: '🇬🇧 UK',
+      au: '🇦🇺 Australia',
+      ca: '🇨🇦 Canada',
+      sg: '🇸🇬 Singapore',
+      in: '🇮🇳 India',
+    };
+    let selectedCountry = 'gb';
+
+    document.querySelectorAll('.country-pill:not(.freshness-pill)').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.country-pill:not(.freshness-pill)').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        selectedCountry = pill.dataset.code;
+      });
+    });
+
+    let selectedDays = 0;
+    document.querySelectorAll('.freshness-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.freshness-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        selectedDays = parseInt(pill.dataset.days);
+      });
+    });
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    function getCSRF() {
+      const c = document.cookie.split('; ').find(r => r.startsWith('csrf_access_token='));
+      return c ? decodeURIComponent(c.split('=')[1]) : '';
+    }
+
+    function relativeDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      if (isNaN(d)) return '';
+      const diff = Math.floor((Date.now() - d) / 1000);
+      if (diff < 60)  return 'just now';
+      if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+      if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+      return `${Math.floor(diff/86400)}d ago`;
+    }
+
+    function escHtml(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function formatSalary(min, max) {
+      if (!min && !max) return null;
+      const fmt = n => n >= 1000 ? `$${Math.round(n/1000)}k` : `$${n}`;
+      if (min && max) return `${fmt(min)} – ${fmt(max)}`;
+      if (min) return `${fmt(min)}+`;
+      return `Up to ${fmt(max)}`;
+    }
+
+    // ── UI state helpers ─────────────────────────────────────────────────────
+    function showSection(id) {
+      ['uploadSection','loadingSection','resultsSection','emptyState','errorState'].forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.style.display = (s === id) ? '' : 'none';
+      });
+    }
+
+    // ── Render jobs ──────────────────────────────────────────────────────────
+    function renderJobs(data) {
+      const grid  = document.getElementById('jobsGrid');
+      const pill  = document.getElementById('queryPill');
+      const count = document.getElementById('resultsCount');
+
+      const countryLabel = COUNTRY_LABELS[data.country_used] || COUNTRY_LABELS[selectedCountry] || '';
+      pill.textContent  = `Showing jobs in ${countryLabel} for: ${data.query_used || ''}`;
+      count.textContent = `${data.total_results || data.jobs.length} positions found`;
+
+      grid.innerHTML = data.jobs.map(job => {
+        const salary  = formatSalary(job.salary_min, job.salary_max);
+        const salaryHtml = salary
+          ? `<span><i data-lucide="dollar-sign" style="width:13px;height:13px"></i> ${escHtml(salary)}</span>`
+          : `<span class="job-card-salary"><i data-lucide="dollar-sign" style="width:13px;height:13px"></i> Salary not listed</span>`;
+
+        return `
+          <div class="job-card">
+            <p class="job-card-title">${escHtml(job.title)}</p>
+            <span class="job-card-company">${escHtml(job.company)}</span>
+            <div class="job-card-meta">
+              <span><i data-lucide="map-pin" style="width:13px;height:13px"></i> ${escHtml(job.location)}</span>
+              ${salaryHtml}
+            </div>
+            <p class="job-card-desc">${escHtml(job.description)}${job.description && job.description.length >= 150 ? '…' : ''}</p>
+            <div class="job-card-footer">
+              <span class="job-date">${escHtml(relativeDate(job.created))}</span>
+              ${job.url ? `<a href="${escHtml(job.url)}" target="_blank" rel="noopener noreferrer" class="btn-view-job">View Job</a>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    // ── Fetch jobs by report_id ──────────────────────────────────────────────
+    async function fetchJobsForReport(reportId) {
+      showSection('loadingSection');
+      try {
+        const csrf = getCSRF();
+        const headers = {};
+        if (csrf) headers['X-CSRF-TOKEN'] = csrf;
+        const r = await fetch(`/api/resume/search-jobs?report_id=${encodeURIComponent(reportId)}&country=${encodeURIComponent(selectedCountry)}&max_days_old=${selectedDays}`, {
+          credentials: 'include',
+          headers
+        });
+        const data = await r.json();
+
+        if (!r.ok || data.error) {
+          const errDiv = document.getElementById('errorState');
+          const errSpan = errDiv.querySelector('span');
+          if (errSpan) {
+            errSpan.innerHTML = `<i data-lucide="alert-circle" style="width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:6px"></i> ${escHtml(data.error || 'Job search is temporarily unavailable.')}`;
+          }
+          showSection('errorState');
+          if (typeof lucide !== 'undefined') lucide.createIcons();
+          return;
+        }
+        if (!data.jobs || data.jobs.length === 0) {
+          showSection('emptyState');
+          return;
+        }
+        sessionStorage.setItem('lastJobSearch', JSON.stringify(data));
+        showSection('resultsSection');
+        renderJobs(data);
+      } catch(e) {
+        showSection('errorState');
+      }
+    }
+
+    // ── Upload flow ──────────────────────────────────────────────────────────
+    let selectedFile = null;
+
+    const uploadZone  = document.getElementById('jobsUploadZone');
+    const fileInput   = document.getElementById('jobsFileInput');
+    const fileInfo    = document.getElementById('jobsFileInfo');
+    const fileName    = document.getElementById('jobsFileName');
+    const fileSize    = document.getElementById('jobsFileSize');
+    const findBtn     = document.getElementById('findJobsBtn');
+
+    function handleFile(file) {
+      if (!file) return;
+      selectedFile = file;
+      fileName.textContent = file.name;
+      const kb = (file.size / 1024).toFixed(1);
+      fileSize.textContent = kb > 1024 ? `${(kb/1024).toFixed(1)} MB` : `${kb} KB`;
+      fileInfo.classList.remove('hidden');
+      findBtn.disabled = false;
+      lucide.createIcons();
+    }
+
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('drag-over');
+      const f = e.dataTransfer.files[0];
+      if (f) handleFile(f);
+    });
+    fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
+
+    findBtn.addEventListener('click', async () => {
+      if (!selectedFile) return;
+      showSection('loadingSection');
+
+      try {
+        const csrf = getCSRF();
+        const fd = new FormData();
+        fd.append('resume', selectedFile);
+        fd.append('industry', 'Software Engineering');
+
+        const headers = {};
+        if (csrf) headers['X-CSRF-TOKEN'] = csrf;
+
+        const r = await fetch('/api/resume/analyze', {
+          method: 'POST',
+          credentials: 'include',
+          headers,
+          body: fd,
+        });
+        const data = await r.json();
+
+        if (!r.ok || !data.report_id) {
+          const errDiv = document.getElementById('errorState');
+          const errSpan = errDiv.querySelector('span');
+          if (errSpan) {
+            errSpan.innerHTML = `<i data-lucide="alert-circle" style="width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:6px"></i> ${escHtml(data.error || 'Analysis failed. Please try again.')}`;
+          }
+          showSection('errorState');
+          if (typeof lucide !== 'undefined') lucide.createIcons();
+          return;
+        }
+        sessionStorage.setItem('lastReport', JSON.stringify(data));
+        await fetchJobsForReport(data.report_id);  // selectedCountry already set
+      } catch(e) {
+        showSection('errorState');
+      }
+    });
+
+    // ── Reset Search ─────────────────────────────────────────────────────────
+    function resetSearch() {
+      selectedFile = null;
+      fileInput.value = '';
+      fileInfo.classList.add('hidden');
+      findBtn.disabled = true;
+      sessionStorage.removeItem('lastJobSearch');
+      
+      // Clear report_id from URL if present
+      if (window.location.search.includes('report_id=')) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+      
+      showSection('uploadSection');
+      
+      // Reset freshness pills
+      selectedDays = 0;
+      document.querySelectorAll('.freshness-pill').forEach(p => {
+        p.classList.toggle('active', p.dataset.days === "0");
+      });
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    document.getElementById('newSearchBtn').addEventListener('click', resetSearch);
+    document.getElementById('emptyStateResetBtn').addEventListener('click', resetSearch);
+    document.getElementById('errorResetBtn').addEventListener('click', resetSearch);
+    document.getElementById('clearFileBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      resetSearch();
+    });
+
+    // ── Entry point ──────────────────────────────────────────────────────────
+    const params   = new URLSearchParams(window.location.search);
+    const reportId = params.get('report_id');
+
+    if (reportId) {
+      // Came from report.html — skip upload, go straight to job search
+      document.getElementById('uploadSection').style.display = 'none';
+      fetchJobsForReport(reportId);
+    } else {
+      // Check sessionStorage for a cached result
+      const cached = sessionStorage.getItem('lastJobSearch');
+      if (cached) {
+        try {
+          const data = JSON.parse(cached);
+          // Restore active pill to match cached country
+          if (data.country_used) {
+            selectedCountry = data.country_used;
+            document.querySelectorAll('.country-pill').forEach(p => {
+              p.classList.toggle('active', p.dataset.code === data.country_used);
+            });
+          }
+          showSection('resultsSection');
+          renderJobs(data);
+        } catch(e) {
+          showSection('uploadSection');
+        }
+      } else {
+        showSection('uploadSection');
+      }
+    }
+  })();
+  </script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>
