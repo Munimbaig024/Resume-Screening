@@ -1,6 +1,4 @@
-"""
-db/mongo.py — MongoDB connection, collection indexes, and field encryption
-"""
+"""MongoDB connection and field encryption."""
 import os
 from datetime import datetime, timezone, timedelta
 from pymongo import MongoClient, ASCENDING, DESCENDING, TEXT
@@ -34,7 +32,6 @@ def get_db():
     return _db
 
 
-# ── Field Encryption ──────────────────────────────────────────────────────────
 
 def encrypt_field(value: str) -> str:
     """Encrypt a string field for at-rest storage."""

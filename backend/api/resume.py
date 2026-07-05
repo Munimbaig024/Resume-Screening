@@ -36,7 +36,6 @@ def analyze():
         jwt_error = str(e)
         pass
 
-    # ── Validate inputs ────────────────────────────────────────────────────────
     if "resume" not in request.files:
         return jsonify({"error": "No resume file uploaded"}), 400
 
@@ -58,15 +57,12 @@ def analyze():
     if len(text.split()) < 50:
         return jsonify({"error": "Resume text too short — check your file"}), 400
 
-    # ── Step 2: Parse sections + bullets ──────────────────────────────────────
     sections = parse_sections(text)
     bullets  = extract_bullets(sections.get("experience", ""))
     metadata = extract_metadata(text, sections)
 
-    # ── Step 3: Run 5 scoring modules ─────────────────────────────────────────
     scores = run_all_scores(text, sections, bullets, job_title, jd_text)
 
-    # ── Step 4: JD similarity (RAG) — if job description provided ─────────────
     jd_result = None
     if jd_text:
         try:
@@ -77,7 +73,6 @@ def analyze():
             scores["jd_match"] = None
             scores["jd_error"] = str(e)
 
-    # ── Step 5: AI suggestions via Groq ───────────────────────────────────────
     try:
         ai_output = generate_suggestions(job_title, scores, metadata, jd_text)
     except Exception:
@@ -88,7 +83,6 @@ def analyze():
             "summary_paragraph": "AI suggestions are temporarily unavailable.",
         }
 
-    # ── Step 6: Save report to MongoDB (if authenticated) ─────────────────────
     report_id = None
     db_error = None
     if user_id:

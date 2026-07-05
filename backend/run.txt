@@ -1,4 +1,4 @@
-============================================================
++============================================================
   RESUME CHECKER BACKEND — Setup & Run
   Location: f:\Rafay\resume_checker\backend\
 ============================================================
@@ -14,7 +14,7 @@ STEP 2 — Install dependencies:
 
 STEP 3 — Fill in your .env:
 -----------------------------
-  MONGO_URI=mongodb://localhost:27017/resume_checker
+  MONGO_URI=mongodb://localhost:27017/resume_checker+@
   GROQ_API_KEY=<get free key at console.groq.com>
   JWT_SECRET_KEY=<any 32+ char random string>
   ENCRYPTION_KEY=<run step 4 to generate this>

@@ -10,7 +10,6 @@ from flask_jwt_extended import JWTManager
 from config import Config
 from middleware.rate_limiter import limiter
 
-# ── App Factory ────────────────────────────────────────────────────────────────
 def create_app() -> Flask:
     app = Flask(__name__, static_folder="../frontend", static_url_path="")
 
@@ -38,35 +37,38 @@ def create_app() -> Flask:
     app.register_blueprint(chat_bp)
     app.register_blueprint(resume_bp)
 
-    # ── Error handlers ─────────────────────────────────────────────────────────
     @app.errorhandler(400)
-    def bad_request(e):       return jsonify({"error": "Bad request"}), 400
+    def bad_request(e):
+        return jsonify({"error": "Bad request"}), 400
 
     @app.errorhandler(401)
-    def unauthorized(e):      return jsonify({"error": "Unauthorized"}), 401
+    def unauthorized(e):
+        return jsonify({"error": "Unauthorized"}), 401
 
     @app.errorhandler(403)
-    def forbidden(e):         return jsonify({"error": "Forbidden"}), 403
+    def forbidden(e):
+        return jsonify({"error": "Forbidden"}), 403
 
     @app.errorhandler(404)
-    def not_found(e):         return jsonify({"error": "Not found"}), 404
+    def not_found(e):
+        return jsonify({"error": "Not found"}), 404
 
     @app.errorhandler(413)
     def too_large(e):
         return jsonify({"error": f"File too large. Max {Config.MAX_UPLOAD_MB}MB"}), 413
 
     @app.errorhandler(429)
-    def rate_limit(e):        return jsonify({"error": "Too many requests — slow down"}), 429
+    def rate_limit(e):
+        return jsonify({"error": "Too many requests"}), 429
 
     @app.errorhandler(500)
-    def server_error(e):      return jsonify({"error": "Internal server error"}), 500
+    def server_error(e):
+        return jsonify({"error": "Internal server error"}), 500
 
-    # ── Health check ───────────────────────────────────────────────────────────
     @app.route("/api/health")
     def health():
         return jsonify({"status": "ok", "version": "1.0.0"})
 
-    # ── Serve frontend SPA ─────────────────────────────────────────────────────
     @app.route("/")
     def landing():
         return send_from_directory(app.static_folder, "index.html")
@@ -81,7 +83,6 @@ def create_app() -> Flask:
     return app
 
 
-# ── Entry Point ────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     from db.mongo import setup_indexes
     app = create_app()

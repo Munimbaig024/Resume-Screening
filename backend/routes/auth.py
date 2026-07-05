@@ -1,7 +1,4 @@
-"""
-routes/auth.py — Secure register/login with bcrypt, JWT HttpOnly cookies,
-                 login lockout, and refresh token rotation.
-"""
+"""Authentication endpoints."""
 import bcrypt
 from datetime import datetime, timezone, timedelta
 from flask import Blueprint, request, jsonify, make_response
