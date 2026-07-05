@@ -17,7 +17,6 @@ def _get_model():
     return _model
 
 
-# ── Text Chunking ──────────────────────────────────────────────────────────────
 
 def chunk_text(text: str, chunk_size: int = 200) -> list[str]:
     """
@@ -34,7 +33,6 @@ def chunk_text(text: str, chunk_size: int = 200) -> list[str]:
     return chunks
 
 
-# ── Embedding ─────────────────────────────────────────────────────────────────
 
 def embed_texts(texts: list[str]) -> np.ndarray:
     """Return L2-normalised embeddings (n, dim)."""
@@ -45,7 +43,6 @@ def embed_texts(texts: list[str]) -> np.ndarray:
     return embeddings / np.maximum(norms, 1e-9)
 
 
-# ── JD Similarity Score ───────────────────────────────────────────────────────
 
 def jd_similarity_score(resume_text: str, jd_text: str) -> dict:
     """
@@ -102,7 +99,6 @@ def jd_similarity_score(resume_text: str, jd_text: str) -> dict:
     }
 
 
-# ── Keyword Extraction from JD Gaps ───────────────────────────────────────────
 
 def _extract_keywords(text: str) -> list[str]:
     """

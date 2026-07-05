@@ -1,0 +1,46 @@
+RESUME CHECKER BACKEND — Setup & Run
+
+STEP 1 — Create & activate virtual environment
+  python -m venv venv
+  venv\Scripts\activate
+
+STEP 2 — Install dependencies:
+
+  pip install -r requirements.txt
+
+STEP 3 — Fill in your .env:
+
+MONGO_URI=mongodb://localhost:27017/resume_checker
+GROQ_API_KEY=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
+JWT_SECRET_KEY=9bea2891815abc7ae98a2c60b0c025cb34dbe18c3a774efc50dfface7ef1679c
+JWT_ACCESS_TOKEN_MINUTES=15
+JWT_REFRESH_TOKEN_DAYS=7
+ENCRYPTION_KEY=J15q_R0D5f3JFCNv0a-IuJAX3L6rKJXXp02s2zLI-Hg=
+PORT=5000
+FLASK_DEBUG=true
+
+
+STEP 4 — Generate encryption key:
+
+  python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+  (paste output into ENCRYPTION_KEY in .env)
+
+STEP 5 — Setup MongoDB (run ONCE):
+
+  Make sure MongoDB is running first:
+    mongod --dbpath C:\data\db
+
+  Then run:
+    python setup_db.py
+
+STEP 6 — Start the server:
+
+  python app.py
+  Open -> http://localhost:5000
+
+  QUICK ONE-LINER (after venv + .env configured):
+
+  python setup_db.py && python app.py
+
+
+

@@ -46,7 +46,7 @@ def analyze():
     if not file.filename:
         return jsonify({"error": "Empty filename"}), 400
 
-    # ── Step 1: Extract text ───────────────────────────────────────────────────
+
     try:
         text = extract_text(file)
     except ValueError as e:
@@ -101,10 +101,9 @@ def analyze():
             result = db.reports.insert_one(report)
             report_id = str(result.inserted_id)
         except Exception as e:
-            print(f"DB Insert failed: {e}")  # Don't fail analysis just because DB save failed
+            print(f"DB Insert failed: {e}")
             db_error = str(e)
 
-    # ── Response ───────────────────────────────────────────────────────────────
     return jsonify({
         "report_id":   report_id,
         "debug_user_id": user_id if 'user_id' in locals() else None,

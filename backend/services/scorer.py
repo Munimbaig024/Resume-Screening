@@ -220,7 +220,6 @@ def completeness_score(sections: dict) -> int:
                if sections.get(check, False))
 
 
-# ── Weighted Final Score ───────────────────────────────────────────────────────
 
 WEIGHTS = {
     "keyword":      0.30,
@@ -246,7 +245,6 @@ def calculate_final_score(scores: dict) -> dict:
     return {"score": final, "grade": grade}
 
 
-# ── Run All Modules ────────────────────────────────────────────────────────────
 
 def run_all_scores(text: str, sections: dict, bullets: list[str], job_title: str, jd_text: str) -> dict:
     kw     = keyword_score(text, jd_text)

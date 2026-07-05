@@ -94,7 +94,6 @@ def extract_bullets(experience_text: str) -> list[str]:
     return bullets
 
 
-# ── Metadata Extractor ─────────────────────────────────────────────────────────
 
 def extract_metadata(text: str, sections: dict) -> dict:
     """Extract high-level metadata to feed the AI prompt."""

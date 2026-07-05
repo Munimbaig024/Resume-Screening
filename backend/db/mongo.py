@@ -52,8 +52,6 @@ def decrypt_field(value: str) -> str:
     return value
 
 
-# ── Index Setup ────────────────────────────────────────────────────────────────
-
 def setup_indexes():
     """
     Create all required MongoDB indexes.
@@ -83,8 +81,6 @@ def setup_indexes():
 
     print("✅  MongoDB indexes created/verified")
 
-
-# ── Collection Helpers ─────────────────────────────────────────────────────────
 
 def get_users() -> Collection:    return get_db().users
 def get_resumes() -> Collection:  return get_db().resumes
